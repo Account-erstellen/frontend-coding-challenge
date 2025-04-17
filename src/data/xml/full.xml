@@ -1,0 +1,211 @@
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:ck="http://dashif.org/guidelines/clearKey" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" availabilityStartTime="2025-04-11T13:59:34Z" mediaPresentationDuration="PT1M31.241S" minBufferTime="PT25S" profiles="urn:mpeg:dash:profile:full:2011" publishTime="2025-04-11T13:59:24Z" type="static">
+<ReceiverID>bf1d4883-5305-4d65-a299-cbb654ef1ed9</ReceiverID>
+<BaseURL>/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/</BaseURL>
+<Period id="1" start="PT0S">
+<EventStream schemeIdUri="urn:mpeg:dash:event:2012" value="slides"/>
+<EventStream schemeIdUri="urn:mpeg:dash:event:2012" value="views"/>
+<EventStream schemeIdUri="urn:mpeg:dash:event:2012" value="overlays"/>
+<EventStream schemeIdUri="urn:mpeg:dash:event:2012" value="chapters">
+<Event presentationTime="0" title="Introduction to event planning challenges"/>
+<Event presentationTime="21000" title="Online events that feel real"/>
+<Event presentationTime="42000" title="Customizable and interactive event environments"/>
+<Event presentationTime="62000" title="Technical capabilities and sustainability"/>
+<Event presentationTime="84000" title="Customer satisfaction and pricing options"/>
+</EventStream>
+<EventStream schemeIdUri="urn:mpeg:dash:event:2012" value="speakers"/>
+<EventStream schemeIdUri="urn:mpeg:dash:event:2012" value="subtitle"/>
+<EventStream schemeIdUri="urn:mpeg:dash:event:2012" value="questions"/>
+<AdaptationSet contentType="audio" group="0" id="0" mimeType="audio/webm" segmentAlignment="true">
+<Role schemeIdUri="urn:mpeg:dash:role:2011" value="main"/>
+<ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" value="ClearKey1.0">
+<ck:Laurl Lic_type="EME-1.0">/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/hls.key</ck:Laurl>
+</ContentProtection>
+<Representation bandwidth="64000" codecs="opus" id="a0">
+<SegmentList timescale="1000">
+<Initialization sourceURL="a0_0.webm"/>
+<SegmentTimeline>
+<S d="4981" t="7"/>
+<S d="5000" t="4988"/>
+<S d="4060" t="9988"/>
+<S d="5960" t="14048"/>
+<S d="5000" t="20008"/>
+<S d="5000" t="25008"/>
+<S d="5000" t="30008"/>
+<S d="5000" t="35008"/>
+<S d="5000" t="40008"/>
+<S d="5000" t="45008"/>
+<S d="5000" t="50008"/>
+<S d="5000" t="55008"/>
+<S d="5000" t="60008"/>
+<S d="5000" t="65008"/>
+<S d="5000" t="70008"/>
+<S d="5000" t="75008"/>
+<S d="5000" t="80008"/>
+<S d="5000" t="85008"/>
+<S d="1240" t="90008"/>
+</SegmentTimeline>
+<SegmentURL media="a0_1.webm"/>
+<SegmentURL media="a0_2.webm"/>
+<SegmentURL media="a0_3.webm"/>
+<SegmentURL media="a0_4.webm"/>
+<SegmentURL media="a0_5.webm"/>
+<SegmentURL media="a0_6.webm"/>
+<SegmentURL media="a0_7.webm"/>
+<SegmentURL media="a0_8.webm"/>
+<SegmentURL media="a0_9.webm"/>
+<SegmentURL media="a0_10.webm"/>
+<SegmentURL media="a0_11.webm"/>
+<SegmentURL media="a0_12.webm"/>
+<SegmentURL media="a0_13.webm"/>
+<SegmentURL media="a0_14.webm"/>
+<SegmentURL media="a0_15.webm"/>
+<SegmentURL media="a0_16.webm"/>
+<SegmentURL media="a0_17.webm"/>
+<SegmentURL media="a0_18.webm"/>
+<SegmentURL media="a0_19.webm"/>
+</SegmentList>
+</Representation>
+</AdaptationSet>
+<AdaptationSet contentType="video" group="1" id="1" maxBandwidth="2079000" maxHeight="1080" maxWidth="1920" mimeType="video/webm" minBandwidth="440000" segmentAlignment="true">
+<Role schemeIdUri="urn:mpeg:dash:role:2011" value="main"/>
+<ContentProtection schemeIdUri="urn:uuid:e2719d58-a985-b3c9-781a-b030af78d30e" value="ClearKey1.0">
+<ck:Laurl Lic_type="EME-1.0">/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/hls.key</ck:Laurl>
+</ContentProtection>
+<Representation bandwidth="2079000" codecs="vp8" height="1080" id="v0" width="1920">
+<SegmentList timescale="1000">
+<Initialization sourceURL="v0_0.webm"/>
+<SegmentTimeline>
+<S d="5000" t="7"/>
+<S d="5000" t="5007"/>
+<S d="4040" t="10007"/>
+<S d="5960" t="14047"/>
+<S d="5000" t="20007"/>
+<S d="5000" t="25007"/>
+<S d="5000" t="30007"/>
+<S d="5000" t="35007"/>
+<S d="5000" t="40007"/>
+<S d="5000" t="45007"/>
+<S d="5000" t="50007"/>
+<S d="5000" t="55007"/>
+<S d="5000" t="60007"/>
+<S d="5000" t="65007"/>
+<S d="5000" t="70007"/>
+<S d="5000" t="75007"/>
+<S d="5000" t="80007"/>
+<S d="5000" t="85007"/>
+<S d="1200" t="90007"/>
+</SegmentTimeline>
+<SegmentURL media="v0_1.webm"/>
+<SegmentURL media="v0_2.webm"/>
+<SegmentURL media="v0_3.webm"/>
+<SegmentURL media="v0_4.webm"/>
+<SegmentURL media="v0_5.webm"/>
+<SegmentURL media="v0_6.webm"/>
+<SegmentURL media="v0_7.webm"/>
+<SegmentURL media="v0_8.webm"/>
+<SegmentURL media="v0_9.webm"/>
+<SegmentURL media="v0_10.webm"/>
+<SegmentURL media="v0_11.webm"/>
+<SegmentURL media="v0_12.webm"/>
+<SegmentURL media="v0_13.webm"/>
+<SegmentURL media="v0_14.webm"/>
+<SegmentURL media="v0_15.webm"/>
+<SegmentURL media="v0_16.webm"/>
+<SegmentURL media="v0_17.webm"/>
+<SegmentURL media="v0_18.webm"/>
+<SegmentURL media="v0_19.webm"/>
+</SegmentList>
+</Representation>
+<Representation bandwidth="1140000" codecs="vp8" height="720" id="v1" width="1280">
+<SegmentList timescale="1000">
+<Initialization sourceURL="v1_0.webm"/>
+<SegmentTimeline>
+<S d="5000" t="0"/>
+<S d="5000" t="5000"/>
+<S d="4040" t="10000"/>
+<S d="5960" t="14040"/>
+<S d="5000" t="20000"/>
+<S d="5000" t="25000"/>
+<S d="5000" t="30000"/>
+<S d="5000" t="35000"/>
+<S d="5000" t="40000"/>
+<S d="5000" t="45000"/>
+<S d="5000" t="50000"/>
+<S d="5000" t="55000"/>
+<S d="5000" t="60000"/>
+<S d="5000" t="65000"/>
+<S d="5000" t="70000"/>
+<S d="5000" t="75000"/>
+<S d="5000" t="80000"/>
+<S d="5000" t="85000"/>
+<S d="1200" t="90000"/>
+</SegmentTimeline>
+<SegmentURL media="v1_1.webm"/>
+<SegmentURL media="v1_2.webm"/>
+<SegmentURL media="v1_3.webm"/>
+<SegmentURL media="v1_4.webm"/>
+<SegmentURL media="v1_5.webm"/>
+<SegmentURL media="v1_6.webm"/>
+<SegmentURL media="v1_7.webm"/>
+<SegmentURL media="v1_8.webm"/>
+<SegmentURL media="v1_9.webm"/>
+<SegmentURL media="v1_10.webm"/>
+<SegmentURL media="v1_11.webm"/>
+<SegmentURL media="v1_12.webm"/>
+<SegmentURL media="v1_13.webm"/>
+<SegmentURL media="v1_14.webm"/>
+<SegmentURL media="v1_15.webm"/>
+<SegmentURL media="v1_16.webm"/>
+<SegmentURL media="v1_17.webm"/>
+<SegmentURL media="v1_18.webm"/>
+<SegmentURL media="v1_19.webm"/>
+</SegmentList>
+</Representation>
+<Representation bandwidth="440000" codecs="vp8" height="360" id="v2" width="640">
+<SegmentList timescale="1000">
+<Initialization sourceURL="v2_0.webm"/>
+<SegmentTimeline>
+<S d="5000" t="0"/>
+<S d="5000" t="5000"/>
+<S d="4040" t="10000"/>
+<S d="5960" t="14040"/>
+<S d="5000" t="20000"/>
+<S d="5000" t="25000"/>
+<S d="5000" t="30000"/>
+<S d="5000" t="35000"/>
+<S d="5000" t="40000"/>
+<S d="5000" t="45000"/>
+<S d="5000" t="50000"/>
+<S d="5000" t="55000"/>
+<S d="5000" t="60000"/>
+<S d="5000" t="65000"/>
+<S d="5000" t="70000"/>
+<S d="5000" t="75000"/>
+<S d="5000" t="80000"/>
+<S d="5000" t="85000"/>
+<S d="1200" t="90000"/>
+</SegmentTimeline>
+<SegmentURL media="v2_1.webm"/>
+<SegmentURL media="v2_2.webm"/>
+<SegmentURL media="v2_3.webm"/>
+<SegmentURL media="v2_4.webm"/>
+<SegmentURL media="v2_5.webm"/>
+<SegmentURL media="v2_6.webm"/>
+<SegmentURL media="v2_7.webm"/>
+<SegmentURL media="v2_8.webm"/>
+<SegmentURL media="v2_9.webm"/>
+<SegmentURL media="v2_10.webm"/>
+<SegmentURL media="v2_11.webm"/>
+<SegmentURL media="v2_12.webm"/>
+<SegmentURL media="v2_13.webm"/>
+<SegmentURL media="v2_14.webm"/>
+<SegmentURL media="v2_15.webm"/>
+<SegmentURL media="v2_16.webm"/>
+<SegmentURL media="v2_17.webm"/>
+<SegmentURL media="v2_18.webm"/>
+<SegmentURL media="v2_19.webm"/>
+</SegmentList>
+</Representation>
+</AdaptationSet>
+</Period>
+</MPD>

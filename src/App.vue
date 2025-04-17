@@ -41,6 +41,8 @@ const chapters: Chapter[] = [
 ];
 
 const isPlaying = ref<boolean>(false);
+const isChaptersOpen = ref<boolean>(false);
+const isTranscriptOpen = ref<boolean>(false);
 const isMuted = ref<boolean>(false);
 const isFullscreen = ref<boolean>(false);
 const currentTime = ref<number>(0);
@@ -157,15 +159,38 @@ const setDuration = () => {
 <template>
 	<div>
 		<h1 class="title">Frontend Coding Challenge</h1>
-		<video
-			ref="videoRef"
-			class="video"
-			@loadedmetadata="setDuration"
-			:src="videoUrl"
-			@timeupdate="updateTime"
-		></video>
+		<div class="video-container">
+			<div class="transcript-panel" :class="{ open: isTranscriptOpen }">
+				<div class="transcript-content-panel">
+					<p>Transcript</p>
+					<p>Transcript Order</p>
+				</div>
+				<Button class="toggle-content-btn-left" @click="isTranscriptOpen = !isTranscriptOpen">
+					<img class="arrow" src="./assets/angle-double-left.svg" alt="" />
+				</Button>
+			</div>
 
-		<div class="overall">
+			<!-- VIDEO -->
+			<video
+				ref="videoRef"
+				class="video"
+				@loadedmetadata="setDuration"
+				:src="videoUrl"
+				@timeupdate="updateTime"
+			></video>
+
+			<div class="chapters-panel" :class="{ open: isChaptersOpen }">
+				<div class="chapters-content-panel">
+					<p>Chapters</p>
+					<p>Chapters Order</p>
+				</div>
+				<Button class="toggle-content-btn-right" @click="isChaptersOpen = !isChaptersOpen">
+					<img class="arrow" src="./assets/angle-double-right.svg" alt="" />
+				</Button>
+			</div>
+		</div>
+
+		<div class="controls-container">
 			<div class="progress-bar-container">
 				<!-- Progress Bar and  Chapters in 1 Own Component-->
 				<input class="progress-bar" type="range" min="0" :max="duration" :value="currentTime" step="0.004" />
@@ -229,18 +254,89 @@ const setDuration = () => {
 	margin: 0 auto 25px;
 	text-align: center;
 }
+
+.video-container {
+	display: flex;
+	justify-content: center;
+	align-items: stretch;
+}
+
 .video {
 	width: 100%;
 	max-width: 1000px;
 	height: auto;
-	border-top-left-radius: 15px;
-	border-top-right-radius: 15px;
-	margin: 0 auto;
-	display: block;
+	display: absolute;
 	box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);
 }
 
-.overall {
+.transcript-panel,
+.chapters-panel {
+	display: flex;
+	flex-direction: row;
+	align-items: stretch;
+	overflow: hidden;
+	transition: width 0.3s ease;
+	height: auto;
+}
+
+/* Standardbreite nur der Button */
+.transcript-panel,
+.chapters-panel {
+	width: 60px;
+}
+
+/* Wenn geöffnet: Content sichtbar */
+.transcript-panel.open {
+	width: 300px;
+}
+
+.chapters-panel.open {
+	width: 300px;
+}
+
+.transcript-content-panel,
+.chapters-content-panel {
+	display: none;
+	padding: 20px;
+	background-color: #f5f5f5;
+	width: 240px; /* 300 - 60px (Buttonbreite) */
+}
+
+/* Sichtbar machen, wenn Parent offen */
+.transcript-panel.open .transcript-content-panel,
+.chapters-panel.open .chapters-content-panel {
+	display: block;
+}
+
+.toggle-content-btn-left,
+.toggle-content-btn-right {
+	width: 60px;
+	height: 100%;
+	background-color: #ffffff;
+	border: none;
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 0;
+}
+
+.toggle-content-btn-left {
+	border-top-left-radius: 15px;
+	border-bottom-left-radius: 15px;
+}
+
+.toggle-content-btn-right {
+	border-top-right-radius: 15px;
+	border-bottom-right-radius: 15px;
+}
+
+.arrow {
+	width: 20px;
+	height: 20px;
+}
+
+.controls-container {
 	display: block;
 	width: 100%;
 	max-width: 1000px;
@@ -315,7 +411,6 @@ const setDuration = () => {
 	color: #eff4fa;
 	font-size: 15px;
 
-	
 	max-width: 450px;
 	flex: 1 1 auto;
 
