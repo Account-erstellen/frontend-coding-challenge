@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
+//import subtitle from "./data/transcripts.json";
 
 interface Chapter {
 	title: string;
@@ -8,7 +9,7 @@ interface Chapter {
 }
 
 const videoRef = ref<HTMLVideoElement | null>(null);
-//const videoUrl ="https://ubiventlive-fra.s3.eu-central-1.amazonaws.com/cdn/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/video.webm";
+//const videoUrl = "https://ubiventlive-fra.s3.eu-central-1.amazonaws.com/cdn/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/video.webm";
 //const videoUrl = "https://www.w3schools.com/html/mov_bbb.webm";
 const videoUrl = "https://mainline.i3s.unice.fr/mooc/elephants-dream-medium.webm";
 
@@ -84,7 +85,6 @@ const rewind = () => {
 };
 
 //Function to control video volume
-
 const volumeDown = () => {
 	const video = videoRef.value;
 	if (video) {
@@ -136,7 +136,6 @@ const speedDown = () => {
 const formatTime = (time: number) => {
 	const minutes = Math.floor(time / 60);
 	const seconds = Math.floor(time % 60);
-	console.log("Formatted Time: ", `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`);
 	return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
 };
 
@@ -161,28 +160,54 @@ const setDuration = () => {
 		<h1 class="title">Frontend Coding Challenge</h1>
 		<div class="video-container">
 			<div class="transcript-panel" :class="{ open: isTranscriptOpen }">
-				<div class="transcript-content-panel">
-					<p>Transcript</p>
-					<p>Transcript Order</p>
-				</div>
 				<Button class="toggle-content-btn-left" @click="isTranscriptOpen = !isTranscriptOpen">
 					<img class="arrow" src="./assets/angle-double-left.svg" alt="" />
 				</Button>
+				<div class="transcript-content-panel">
+					<h3 class="panel-title">Transcript</h3>
+					<div class="transcript-container">
+						<div class="transcript-item-container">
+							<p class="transcript-text">TimestampsStart --> TimestampsEnd</p>
+							<p class="subtitle">Untertitlel, alsdm , ffhfewoh ewioiwefj w</p>
+						</div>
+						<div class="transcript-item-container">
+							<p class="transcript-text">TimestampsStart --> TimestampsEnd</p>
+							<p class="subtitle">Untertitlel, alsdm , ffhfewoh ewioiwefj w</p>
+						</div>
+						<div class="transcript-item-container">
+							<p class="transcript-text">TimestampsStart --> TimestampsEnd</p>
+							<p class="subtitle">Untertitlel, alsdm , ffhfewoh ewioiwefj w</p>
+						</div>
+						<div class="transcript-item-container">
+							<p class="transcript-text">TimestampsStart --> TimestampsEnd</p>
+							<p class="subtitle">Untertitlel, alsdm , ffhfewoh ewioiwefj w</p>
+						</div>
+						<div class="transcript-item-container">
+							<p class="transcript-text">TimestampsStart --> TimestampsEnd</p>
+							<p class="subtitle">Untertitlel, alsdm , ffhfewoh ewioiwefj w</p>
+						</div>
+						<div class="transcript-item-container">
+							<p class="transcript-text">TimestampsStart --> TimestampsEnd</p>
+							<p class="subtitle">Untertitlel, alsdm , ffhfewoh ewioiwefj w</p>
+						</div>
+					</div>
+				</div>
 			</div>
 
 			<!-- VIDEO -->
-			<video
-				ref="videoRef"
-				class="video"
-				@loadedmetadata="setDuration"
-				:src="videoUrl"
-				@timeupdate="updateTime"
-			></video>
+			<video ref="videoRef" class="video" @loadedmetadata="setDuration" :src="videoUrl" @timeupdate="updateTime">
+				<track src="./assets/transcript.vtt" kind="subtitles" srclang="en" label="English" />
+			</video>
 
 			<div class="chapters-panel" :class="{ open: isChaptersOpen }">
 				<div class="chapters-content-panel">
-					<p>Chapters</p>
-					<p>Chapters Order</p>
+					<h3 class="panel-title">Chapters</h3>
+					<div class="transcript-container">
+						<div class="chapters-item-container">
+							<p class="chapters-text">TimestampsStart --> TimestampsEnd</p>
+							<p class="subtitle">Untertitlel, alsdm , ffhfewoh ewioiwefj w</p>
+						</div>
+					</div>
 				</div>
 				<Button class="toggle-content-btn-right" @click="isChaptersOpen = !isChaptersOpen">
 					<img class="arrow" src="./assets/angle-double-right.svg" alt="" />
@@ -233,6 +258,11 @@ const setDuration = () => {
 				</button>
 			</div>-->
 				<div class="control-group">
+					<button class="button">
+						<img src="./assets/settings-sliders.svg" alt="Settings" />
+					</button>
+				</div>
+				<div class="control-group">
 					<button class="button" @click="toggleFullscreen">
 						<img src="./assets/fullscreen.svg" alt="Vollbild" />
 					</button>
@@ -269,6 +299,30 @@ const setDuration = () => {
 	box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);
 }
 
+.panel-title {
+	color: #001f52;
+	border-bottom: #002e78 1px solid;
+	text-align: center;
+}
+.chapter-item-container,
+.transcript-item-container {
+	margin-top: 8px;
+	padding: 1px;
+	max-height: 100%;
+	overflow-y: auto;
+}
+.chapter-text,
+.transcript-text {
+	font-size: small;
+	font-style: italic;
+	font-weight: 500;
+	color: #61de00;
+}
+.subtitle {
+	font-size: medium;
+	color: #002e78;
+}
+
 .transcript-panel,
 .chapters-panel {
 	display: flex;
@@ -287,11 +341,11 @@ const setDuration = () => {
 
 /* Wenn geöffnet: Content sichtbar */
 .transcript-panel.open {
-	width: 300px;
+	width: 600px;
 }
 
 .chapters-panel.open {
-	width: 300px;
+	width: 600px;
 }
 
 .transcript-content-panel,
@@ -299,7 +353,7 @@ const setDuration = () => {
 	display: none;
 	padding: 20px;
 	background-color: #f5f5f5;
-	width: 240px; /* 300 - 60px (Buttonbreite) */
+	width: 600px; /* 300 - 60px (Buttonbreite) */
 }
 
 /* Sichtbar machen, wenn Parent offen */
@@ -310,7 +364,7 @@ const setDuration = () => {
 
 .toggle-content-btn-left,
 .toggle-content-btn-right {
-	width: 60px;
+	width: 40px;
 	height: 100%;
 	background-color: #ffffff;
 	border: none;
@@ -318,12 +372,13 @@ const setDuration = () => {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	padding: 0;
+	padding: 12px;
 }
 
 .toggle-content-btn-left {
 	border-top-left-radius: 15px;
 	border-bottom-left-radius: 15px;
+	margin-left: auto;
 }
 
 .toggle-content-btn-right {
