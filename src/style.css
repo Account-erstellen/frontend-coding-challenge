@@ -21,7 +21,7 @@
 * {
 	box-sizing: border-box;
 	margin: 0;
-  padding: 0;
+	padding: 0;
 	display: f;
 }
 
@@ -30,4 +30,29 @@
 	margin: 0 auto;
 	padding: 2rem;
 	text-align: center;
+}
+button {
+	background-color: #eff4fa;
+	color: #001f52;
+	border: 1px solid #001f52;
+	padding: 10px;
+	border-radius: 65px;
+	cursor: pointer;
+}
+button img {
+	width: 20px;
+	height: 20px;
+}
+button:hover {
+	background-color: #d1d1d1; /* helleres Blau für Hover-Effekt */
+}
+button.clicked {
+	background-color: #f0f0f0; /* dunkleres Blau für Effekt */
+}
+
+@media (max-width: 600px) {
+	.button img {
+		width: 15px;
+		height: 15px;
+	}
 }
