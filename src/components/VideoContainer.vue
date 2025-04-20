@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import { type Chapter } from "../types/chapter";
+import Modal from "./Universal/Modal.vue";
+import { formatTime } from "../composables/functions.ts"; // Corrected the path to use an alias
 
 const videoRef = ref<HTMLVideoElement | null>(null);
 const videoUrl = "https://mainline.i3s.unice.fr/mooc/elephants-dream-medium.webm";
 //const videoUrl ="https://ubiventlive-fra.s3.eu-central-1.amazonaws.com/cdn/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/video.webm";
-
-interface Chapter {
-	title: string;
-	start: number;
-	end: number;
-}
 
 const chapters: Chapter[] = [
 	{
@@ -42,18 +39,24 @@ const chapters: Chapter[] = [
 const currentTime = ref<number>(0);
 const duration = ref<number>(0);
 const currentChapter = ref<string>(chapters[0].title);
-
 const isPlaying = ref<boolean>(false);
+const showModal = ref<boolean>(false);
 const isMuted = ref<boolean>(false);
 const isFullscreen = ref<boolean>(false);
 const isChaptersOpen = ref<boolean>(false);
 const isTranscriptOpen = ref<boolean>(false);
 const isClicked = ref(false);
+const isSubtitles = ref(false);
+const muteBtnColor = ref<string>("#eff4fa");
 
-const muteBtnColor = ref<string>("#61de00");
-
+watch(currentTime, (newTime: number) => {
+	const chapter = chapters.find((c) => newTime >= c.start && newTime <= c.end);
+	if (chapter) {
+		currentChapter.value = chapter.title;
+	}
+});
 function toggleColor() {
-	muteBtnColor.value = muteBtnColor.value === "#61de00" ? "#f34134" : "#61de00";
+	muteBtnColor.value = muteBtnColor.value === "#eff4fa" ? "#f34134" : "#eff4fa";
 }
 function triggerClickEffect() {
 	isClicked.value = true;
@@ -61,14 +64,12 @@ function triggerClickEffect() {
 		isClicked.value = false;
 	}, 150); // Effekt dauert 150ms
 }
-
 const setDuration = () => {
 	const video = videoRef.value;
 	if (video) {
 		duration.value = video.duration;
 	}
 };
-
 //Function to update current time and duration
 const updateTime = () => {
 	const video = videoRef.value;
@@ -76,7 +77,6 @@ const updateTime = () => {
 		currentTime.value = video.currentTime;
 	}
 };
-
 //Function to fullscreen the video
 const toggleFullscreen = () => {
 	const video = videoRef.value;
@@ -91,14 +91,6 @@ const toggleFullscreen = () => {
 		isFullscreen.value = !isFullscreen.value;
 	}
 };
-
-watch(currentTime, (newTime: number) => {
-	const chapter = chapters.find((c) => newTime >= c.start && newTime <= c.end);
-	if (chapter) {
-		currentChapter.value = chapter.title;
-	}
-});
-
 //Function to play/pause the video
 const togglePlay = () => {
 	const video = videoRef.value;
@@ -112,7 +104,6 @@ const togglePlay = () => {
 		isPlaying.value = false;
 	}
 };
-
 //Function to forward/rewind the video
 const forward = () => {
 	const video = videoRef.value;
@@ -128,7 +119,6 @@ const rewind = () => {
 		video.currentTime -= 5;
 	}
 };
-
 //Function to control video volume
 const volumeDown = () => {
 	const video = videoRef.value;
@@ -137,11 +127,26 @@ const volumeDown = () => {
 		video.volume = Math.max(0, video.volume - 0.1);
 	}
 };
+//Function to decrease playback speed
+const speedDown = () => {
+	const video = videoRef.value;
+	if (video) {
+		triggerClickEffect();
+		video.playbackRate = Math.max(0.5, video.playbackRate - 0.25); // Minimum speed is 0.5x
+	}
+};
 const volumeUp = () => {
 	const video = videoRef.value;
 	if (video) {
 		triggerClickEffect();
 		video.volume = Math.min(1, video.volume + 0.1);
+	}
+};
+const speedUp = () => {
+	const video = videoRef.value;
+	if (video) {
+		triggerClickEffect();
+		video.playbackRate = Math.min(2, video.playbackRate + 0.25); // Maximum speed is 2x
 	}
 };
 const mute = () => {
@@ -153,12 +158,14 @@ const mute = () => {
 		toggleColor();
 	}
 };
-
-//Function to format time outsourced to function file
-const formatTime = (time: number) => {
-	const minutes = Math.floor(time / 60);
-	const seconds = Math.floor(time % 60);
-	return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+const toggleSubtitles = () => {
+	const video = videoRef.value;
+	if (video) {
+		const track = video.textTracks[0];
+		if (track) {
+			track.mode = track.mode === "showing" ? "hidden" : "showing";
+		}
+	}
 };
 </script>
 
@@ -195,14 +202,7 @@ const formatTime = (time: number) => {
 			</div>
 		</div>
 
-		<video
-			ref="videoRef"
-			class="video"
-			@loadedmetadata="setDuration"
-			:src="videoUrl"
-			@timeupdate="updateTime"
-			controls
-		>
+		<video ref="videoRef" class="video" @loadedmetadata="setDuration" :src="videoUrl" @timeupdate="updateTime">
 			<track src="../data/transcripts/transcript.vtt" kind="subtitles" srclang="en" label="English" />
 		</video>
 
@@ -235,44 +235,43 @@ const formatTime = (time: number) => {
 			</div>
 			<div class="control-group">
 				<button :class="{ clicked: isClicked }" @click="rewind">
-					<img src="../assets/rewind.svg" alt="Zurückspulen" />
+					<img src="@/assets/rewind.svg" alt="Zurückspulen" />
 				</button>
 				<button :class="{ clicked: isClicked }" @click="togglePlay">
-					<img src="../assets/play_pause.svg" alt="Abspielen/Pause" />
+					<img src="@/assets/play.svg" v-if="!isPlaying" />
+					<img src="@/assets/play_pause.svg" v-if="isPlaying" />
 				</button>
 				<button :class="{ clicked: isClicked }" @click="forward">
-					<img src="../assets/forward.svg" alt="Vorspulen" />
+					<img src="@/assets/forward.svg" alt="Vorspulen" />
 				</button>
 			</div>
 
 			<div class="control-group">
 				<button :class="{ clicked: isClicked }" @click="volumeDown">
-					<img src="../assets/volume_down.svg" alt="volume-down" />
+					<img src="@/assets/volume_down.svg" alt="volume-down" />
 				</button>
 				<button :class="{ clicked: isClicked }" @click="mute" :style="{ backgroundColor: muteBtnColor }">
-					<img src="../assets/volume_mute.svg" alt="mute" />
+					<img src="@/assets/volume_mute.svg" />
 				</button>
 				<button :class="{ clicked: isClicked }" @click="volumeUp">
-					<img src="../assets/volume_up.svg" alt="volume-up" />
+					<img src="@/assets/volume_up.svg" alt="volume-up" />
 				</button>
 			</div>
-			<!--
-			<div class="control-group-speed">
-				<button class="button" @click="speedDown">
-					<img src="./assets/speed_down.svg" alt="Langsamer" />
-				</button>
-				<button class="button" @click="speedUp">
-					<img src="./assets/speed_up.svg" alt="Schneller" />
-				</button>
-			</div>-->
-			<div class="control-group">
-				<button :class="{ clicked: isClicked }">
-					<img src="../assets/settings-sliders.svg" alt="Settings" />
+			<div class="settings-container">
+				<Modal
+					:visible="showModal"
+					:isSubtitles="isSubtitles"
+					@toggle-subtitles="isSubtitles = !isSubtitles"
+					@speed-up="speedUp"
+					@speed-down="speedDown"
+				/>
+				<button :class="{ clicked: isClicked }" @click="showModal = !showModal">
+					<img src="@/assets/settings-sliders.svg" />
 				</button>
 			</div>
 			<div class="control-group">
 				<button :class="{ clicked: isClicked }" @click="toggleFullscreen">
-					<img src="../assets/fullscreen.svg" alt="Vollbild" />
+					<img src="@/assets/fullscreen.svg" alt="Vollbild" />
 				</button>
 			</div>
 		</div>
@@ -280,37 +279,6 @@ const formatTime = (time: number) => {
 </template>
 
 <style scoped>
-.video-container {
-	display: flex;
-	justify-content: center;
-	align-items: stretch;
-	max-height: 600px;
-}
-.controls-container {
-	display: block;
-	width: 100%;
-	max-width: 1000px;
-	height: auto;
-	margin: 0 auto;
-
-	border-bottom-left-radius: 15px;
-	border-bottom-right-radius: 15px;
-	background-color: #002e78;
-	box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);
-}
-.video-container {
-	display: flex;
-	justify-content: center;
-	align-items: stretch;
-	max-height: 600px;
-}
-.video {
-	width: 100%;
-	max-width: 1000px;
-	display: block;
-	background-color: black;
-	box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);
-}
 .panel-title {
 	color: #001f52;
 	border-bottom: #002e78 1px solid;
@@ -382,13 +350,13 @@ const formatTime = (time: number) => {
 	padding: 12px;
 }
 .toggle-content-btn-left {
-	border-top-left-radius: 15px;
-	border-bottom-left-radius: 15px;
+	border-top-right-radius: 2px;
+	border-bottom-right-radius: 2px;
 	margin-left: auto;
 }
 .toggle-content-btn-right {
-	border-top-right-radius: 15px;
-	border-bottom-right-radius: 15px;
+	border-top-left-radius: 2px;
+	border-bottom-left-radius: 2px;
 }
 .arrow {
 	width: 20px;
@@ -401,7 +369,6 @@ const formatTime = (time: number) => {
 	max-width: 1000px;
 	height: auto;
 	margin: 0 auto;
-
 	border-bottom-left-radius: 15px;
 	border-bottom-right-radius: 15px;
 	background-color: #002e78;
@@ -425,14 +392,12 @@ const formatTime = (time: number) => {
 	background: #61de00;
 	cursor: pointer;
 }
-
 .progress-bar::-moz-range-thumb {
 	width: 25px;
 	height: 25px;
 	background: #bebdbd;
 	cursor: pointer;
 }
-
 .controls {
 	display: flex;
 	justify-content: space-around;
@@ -440,6 +405,7 @@ const formatTime = (time: number) => {
 	flex-wrap: wrap;
 	gap: 10px;
 	max-width: 1000px;
+	width: 100%;
 	padding: 10px;
 	margin: -10px auto;
 	border-bottom-left-radius: 15px;
@@ -450,59 +416,5 @@ const formatTime = (time: number) => {
 	flex-wrap: wrap;
 	gap: 10px;
 	justify-content: center;
-}
-.chapter {
-	color: #eff4fa;
-	font-size: 15px;
-	max-width: 450px;
-	flex: 1 1 auto;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-.current_time {
-	color: #61de00;
-	font-size: 20px;
-	text-align: center;
-	margin: 10px 0;
-	max-width: 400px; /* Maximale Breite für größere Bildschirme */
-	width: 100%; /* Auf mobilen Geräten 100% Breite */
-}
-.control-group {
-	display: flex;
-
-	max-width: 1000px;
-	padding: 5px;
-	margin: 10px auto;
-	border-bottom-left-radius: 15px;
-	border-bottom-right-radius: 15px;
-}
-
-/* Medienabfrage für mobile Geräte */
-@media (max-width: 975px) {
-	.control-group {
-		display: flex;
-
-		flex-direction: row;
-		border: 1px solid green;
-		width: fit-content;
-		margin: 0px auto;
-	}
-
-	.control-group button {
-		background-color: #00a651;
-		color: white;
-		padding: 5px;
-		border: none;
-
-		cursor: pointer;
-	}
-
-	.control-group button:first-child {
-		border-left: none;
-	}
 }
 </style>

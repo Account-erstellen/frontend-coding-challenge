@@ -31,6 +31,54 @@
 	padding: 2rem;
 	text-align: center;
 }
+.video-container {
+	display: flex;
+	justify-content: center;
+	align-items: stretch;
+	max-height: 600px;
+}
+.controls-container {
+	display: block;
+	width: 100%;
+	max-width: 1000px;
+	height: auto;
+	margin: 0 auto;
+	border-bottom-left-radius: 15px;
+	border-bottom-right-radius: 15px;
+	background-color: #002e78;
+	box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);
+}
+.settings-container {
+	position: relative;
+	display: inline-block;
+}
+.video {
+	width: 100%;
+	max-width: 1000px;
+	display: block;
+	background-color: black;
+	box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);
+}
+.chapter {
+	color: #eff4fa;
+	font-size: 15px;
+	max-width: 450px;
+	flex: 1 1 auto;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.current_time {
+	color: #61de00;
+	font-size: 20px;
+	text-align: center;
+	margin: 10px 0;
+	max-width: 400px; /* Maximale Breite für größere Bildschirme */
+	width: 100%; /* Auf mobilen Geräten 100% Breite */
+}
 button {
 	background-color: #eff4fa;
 	color: #001f52;
@@ -50,9 +98,26 @@ button.clicked {
 	background-color: #f0f0f0; /* dunkleres Blau für Effekt */
 }
 
+@media (max-width: 975px) {
+	.control-group {
+		display: flex;
+		max-width: 1000px;
+		padding: 5px;
+		margin: 10px auto;
+		border-bottom-left-radius: 15px;
+		border-bottom-right-radius: 15px;
+	}
+}
 @media (max-width: 600px) {
 	.button img {
 		width: 15px;
 		height: 15px;
+	}
+	.volume-button img {
+		width: 15px;
+		height: 15px;
+	}
+	.controls {
+		justify-content: space-around;
 	}
 }
