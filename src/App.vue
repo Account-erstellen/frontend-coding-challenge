@@ -6,7 +6,7 @@ import VideoPlayer from "./components/VideoPlayer.vue";
 	<div class="main-container">
 		<h1 class="title">Frontend Coding Challenge</h1>
 
-		<VideoPlayer />
+		<VideoPlayer class="video-player"/>
 		
 	</div>
 </template>

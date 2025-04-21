@@ -36,11 +36,11 @@
 	justify-content: center;
 	align-items: stretch;
 	max-height: 600px;
+	width: 100%;
 }
 .controls-container {
 	display: block;
 	width: 100%;
-	max-width: 1000px;
 	height: auto;
 	margin: 0 auto;
 	border-bottom-left-radius: 15px;
@@ -97,27 +97,33 @@ button:hover {
 button.clicked {
 	background-color: #f0f0f0; /* dunkleres Blau für Effekt */
 }
-
-@media (max-width: 975px) {
-	.control-group {
-		display: flex;
-		max-width: 1000px;
-		padding: 5px;
-		margin: 10px auto;
-		border-bottom-left-radius: 15px;
-		border-bottom-right-radius: 15px;
-	}
+.rounded-left {
+	border-top-right-radius: 12px;
+	border-bottom-right-radius: 12px;
 }
+.not-rounded {
+	border-radius: 0px;
+}
+.rounded-right {
+	border-top-left-radius: 12px;
+	border-bottom-left-radius: 12px;
+}
+
 @media (max-width: 600px) {
 	.button img {
 		width: 15px;
 		height: 15px;
 	}
-	.volume-button img {
-		width: 15px;
-		height: 15px;
+	#app {
+		padding-top: 2rem;
+		padding-left: 0;
+		padding-right: 0;
 	}
-	.controls {
-		justify-content: space-around;
+	.controls-container {
+		border-bottom-left-radius: 0px;
+		border-bottom-right-radius: 0px;
+	}
+	.control-group {
+		gap: 1px;
 	}
 }

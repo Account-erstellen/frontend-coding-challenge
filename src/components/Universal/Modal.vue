@@ -38,13 +38,12 @@ const emit = defineEmits(["toggle-subtitles", "speed-up", "speed-down"]);
 .popover-modal {
 	position: absolute;
 	bottom: 55px;
-	left: 50%;
+	left: 30%;
 	transform: translateX(-50%);
 	z-index: 100;
 	width: max-content;
 	max-width: 90vw;
 }
-
 .modal-content {
 	background-color: white;
 	border-radius: 16px;
@@ -53,7 +52,6 @@ const emit = defineEmits(["toggle-subtitles", "speed-up", "speed-down"]);
 	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 	position: relative;
 }
-
 .arrow-down {
 	position: absolute;
 	bottom: -10px;
@@ -65,14 +63,12 @@ const emit = defineEmits(["toggle-subtitles", "speed-up", "speed-down"]);
 	border-right: 10px solid transparent;
 	border-top: 10px solid white;
 }
-
 .modal-actions {
 	display: flex;
 	flex-direction: column;
 	gap: 5px;
 	align-items: center;
 }
-
 .icon-btn {
 	width: 50px;
 	height: 50px;
@@ -85,16 +81,13 @@ const emit = defineEmits(["toggle-subtitles", "speed-up", "speed-down"]);
 	cursor: pointer;
 	transition: background-color 0.2s;
 }
-
 .icon-btn:hover {
 	background-color: #e0e0e0;
 }
-
 .icon-btn img {
 	width: 24px;
 	height: 24px;
 }
-
 /* Responsive */
 @media (max-width: 480px) {
 	.modal-content {

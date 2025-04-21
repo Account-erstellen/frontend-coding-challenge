@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { type Chapter } from "../types/chapter";
 import Modal from "./Universal/Modal.vue";
 import { formatTime } from "../composables/functions.ts"; // Corrected the path to use an alias
@@ -7,38 +7,12 @@ import { formatTime } from "../composables/functions.ts"; // Corrected the path 
 const videoRef = ref<HTMLVideoElement | null>(null);
 const videoUrl = "https://mainline.i3s.unice.fr/mooc/elephants-dream-medium.webm";
 //const videoUrl ="https://ubiventlive-fra.s3.eu-central-1.amazonaws.com/cdn/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/video.webm";
-
-const chapters: Chapter[] = [
-	{
-		title: "Introduction to event planning challenges",
-		start: 0,
-		end: 21,
-	},
-	{
-		title: "Online events that feel real",
-		start: 20.999,
-		end: 41.999,
-	},
-	{
-		title: "Customizable and interactive event environments",
-		start: 42,
-		end: 61.999,
-	},
-	{
-		title: "Technical capabilities and sustainability",
-		start: 62,
-		end: 83.999,
-	},
-	{
-		title: "Customer satisfaction and pricing options",
-		start: 84,
-		end: 90.008,
-	},
-];
+//
+const chapters = ref<Chapter[]>([]);
+const currentChapter = ref<string>();
 
 const currentTime = ref<number>(0);
 const duration = ref<number>(0);
-const currentChapter = ref<string>(chapters[0].title);
 const isPlaying = ref<boolean>(false);
 const showModal = ref<boolean>(false);
 const isMuted = ref<boolean>(false);
@@ -49,8 +23,29 @@ const isClicked = ref(false);
 const isSubtitles = ref(false);
 const muteBtnColor = ref<string>("#eff4fa");
 
+onMounted(async () => {
+	const response = await fetch("./chapters/full.xml");
+	const xmlText = await response.text();
+
+	const parser = new DOMParser();
+	const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+
+	const eventStream = xmlDoc.querySelector('EventStream[value="chapters"]');
+	if (!eventStream) return;
+
+	const eventElements = eventStream.querySelectorAll("Event");
+	const parsed = Array.from(eventElements).map((event, index) => ({
+		id: index + 1,
+		title: event.getAttribute("title") || "Untitled",
+		start: parseInt(event.getAttribute("presentationTime") || "0") / 1000,
+		end: parseInt(event.getAttribute("presentationTime") || "0") / 1000 + 10, // Assuming a default duration of 10 seconds
+	}));
+
+	chapters.value = parsed as Chapter[];
+});
+
 watch(currentTime, (newTime: number) => {
-	const chapter = chapters.find((c) => newTime >= c.start && newTime <= c.end);
+	const chapter = chapters.value.find((c) => newTime >= c.start && newTime <= c.end);
 	if (chapter) {
 		currentChapter.value = chapter.title;
 	}
@@ -167,6 +162,13 @@ const toggleSubtitles = () => {
 		}
 	}
 };
+
+function seekTo(seconds: number) {
+	if (videoRef.value) {
+		videoRef.value.currentTime = seconds;
+		videoRef.value.play();
+	}
+}
 </script>
 
 <template>
@@ -234,26 +236,29 @@ const toggleSubtitles = () => {
 				<p class="chapter">{{ currentChapter }}</p>
 			</div>
 			<div class="control-group">
-				<button :class="{ clicked: isClicked }" @click="rewind">
+				<button :class="['rounded-left', { clicked: isClicked }]" @click="rewind">
 					<img src="@/assets/rewind.svg" alt="Zurückspulen" />
 				</button>
-				<button :class="{ clicked: isClicked }" @click="togglePlay">
+				<button :class="['not-rounded', { clicked: isClicked }]" @click="togglePlay">
 					<img src="@/assets/play.svg" v-if="!isPlaying" />
 					<img src="@/assets/play_pause.svg" v-if="isPlaying" />
 				</button>
-				<button :class="{ clicked: isClicked }" @click="forward">
+				<button :class="['rounded-right', { clicked: isClicked }]" @click="forward">
 					<img src="@/assets/forward.svg" alt="Vorspulen" />
 				</button>
 			</div>
-
-			<div class="control-group">
-				<button :class="{ clicked: isClicked }" @click="volumeDown">
+			<div class="volume-container">
+				<button :class="['rounded-left', { clicked: isClicked }]" @click="volumeDown">
 					<img src="@/assets/volume_down.svg" alt="volume-down" />
 				</button>
-				<button :class="{ clicked: isClicked }" @click="mute" :style="{ backgroundColor: muteBtnColor }">
+				<button
+					:class="['not-rounded', { clicked: isClicked }]"
+					@click="mute"
+					:style="{ backgroundColor: muteBtnColor }"
+				>
 					<img src="@/assets/volume_mute.svg" />
 				</button>
-				<button :class="{ clicked: isClicked }" @click="volumeUp">
+				<button :class="['rounded-right', { clicked: isClicked }]" @click="volumeUp">
 					<img src="@/assets/volume_up.svg" alt="volume-up" />
 				</button>
 			</div>
@@ -265,20 +270,45 @@ const toggleSubtitles = () => {
 					@speed-up="speedUp"
 					@speed-down="speedDown"
 				/>
-				<button :class="{ clicked: isClicked }" @click="showModal = !showModal">
+				<button :class="['rounded-left', { clicked: isClicked }]" @click="showModal = !showModal">
 					<img src="@/assets/settings-sliders.svg" />
 				</button>
-			</div>
-			<div class="control-group">
-				<button :class="{ clicked: isClicked }" @click="toggleFullscreen">
+
+				<button :class="['rounded-right', { clicked: isClicked }]" @click="toggleFullscreen">
 					<img src="@/assets/fullscreen.svg" alt="Vollbild" />
 				</button>
+			</div>
+		</div>
+		<div class="mobile-container">
+			<div class="mobile-transcript">
+				<h3>Transcript</h3>
+			</div>
+			<div class="mobile-chapters">
+				<h3 @click="isChaptersOpen = !isChaptersOpen" class="mobile-chapters-title">
+					Chapters
+					<img class="arrow" src="@/assets/chevron-double-down.svg" v-if="!isChaptersOpen" />
+					<img class="arrow" src="@/assets/chevron-double-up.svg" v-if="isChaptersOpen" />
+				</h3>
+				<div v-if="isChaptersOpen">
+					<ul v-if="chapters.length">
+						<li
+							v-for="(chapter, index) in chapters"
+							:key="index"
+							class="cursor-pointer text-blue-600 hover:underline mb-2"
+							@click="seekTo(chapter.start)"
+						>
+							▶ {{ formatTime(chapter.end) }} – {{ chapter.title }}
+						</li>
+					</ul>
+
+					<p v-else>Lade Kapitel...</p>
+				</div>
 			</div>
 		</div>
 	</div>
 </template>
 
-<style scoped>
+<style>
 .panel-title {
 	color: #001f52;
 	border-bottom: #002e78 1px solid;
@@ -414,7 +444,38 @@ const toggleSubtitles = () => {
 .control-group {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 10px;
+	gap: 0px;
 	justify-content: center;
+}
+.volume-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 0px;
+}
+.mobile-container {
+	justify-content: space-between;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 10px;
+	background-color: #eff4fa;
+	border-top: #61de00 5px solid;
+	margin-top: 10px;
+}
+.mobile-transcript,
+.mobile-chapters {
+	border-bottom: #61de00 2px solid;
+	width: 100%;
+	padding: 5px;
+}
+.mobile-transcript {
+	margin-bottom: 8px;
+}
+ul {
+	overflow-y: auto;
+	max-height: 200px;
+	padding: 0;
+	margin: 0;
 }
 </style>
