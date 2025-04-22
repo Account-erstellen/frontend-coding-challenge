@@ -1,13 +1,20 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
+import { onMounted, provide, ref, watch } from "vue";
 import { type Chapter } from "../types/chapter";
-import Modal from "./Universal/Modal.vue";
+import Modal from "./universal/Modal.vue";
+import MobileContainer from "./mobile/MobileContainer.vue";
 import { formatTime } from "../composables/functions.ts"; // Corrected the path to use an alias
+import { fetchChapters } from "../composables/fetchChapters.ts";
+import { fetchTranscript } from "../composables/fetchTranscript.ts";
 
 const videoRef = ref<HTMLVideoElement | null>(null);
+
 const videoUrl = "https://mainline.i3s.unice.fr/mooc/elephants-dream-medium.webm";
 //const videoUrl ="https://ubiventlive-fra.s3.eu-central-1.amazonaws.com/cdn/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/video.webm";
-//
+
+import { type TranscriptItem } from "../types/transcript";
+
+const transcripts = ref<TranscriptItem[]>([]);
 const chapters = ref<Chapter[]>([]);
 const currentChapter = ref<string>();
 
@@ -23,25 +30,10 @@ const isClicked = ref(false);
 const isSubtitles = ref(false);
 const muteBtnColor = ref<string>("#eff4fa");
 
+//Fetch chapters and transcript on mount of the app
 onMounted(async () => {
-	const response = await fetch("./chapters/full.xml");
-	const xmlText = await response.text();
-
-	const parser = new DOMParser();
-	const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-
-	const eventStream = xmlDoc.querySelector('EventStream[value="chapters"]');
-	if (!eventStream) return;
-
-	const eventElements = eventStream.querySelectorAll("Event");
-	const parsed = Array.from(eventElements).map((event, index) => ({
-		id: index + 1,
-		title: event.getAttribute("title") || "Untitled",
-		start: parseInt(event.getAttribute("presentationTime") || "0") / 1000,
-		end: parseInt(event.getAttribute("presentationTime") || "0") / 1000 + 10, // Assuming a default duration of 10 seconds
-	}));
-
-	chapters.value = parsed as Chapter[];
+	chapters.value = (await fetchChapters("./chapters/full.xml")) || [];
+	transcripts.value = (await fetchTranscript("./transcript/transcript.vtt")) || [];
 });
 
 watch(currentTime, (newTime: number) => {
@@ -153,157 +145,126 @@ const mute = () => {
 		toggleColor();
 	}
 };
-const toggleSubtitles = () => {
-	const video = videoRef.value;
-	if (video) {
-		const track = video.textTracks[0];
-		if (track) {
-			track.mode = track.mode === "showing" ? "hidden" : "showing";
-		}
-	}
-};
-
 function seekTo(seconds: number) {
 	if (videoRef.value) {
 		videoRef.value.currentTime = seconds;
 		videoRef.value.play();
 	}
 }
+provide("videoApi", { videoRef, seekTo });
 </script>
 
 <template>
-	<div class="video-container">
-		<div class="transcript-panel" :class="{ open: isTranscriptOpen }">
-			<button class="toggle-content-btn-left" @click="isTranscriptOpen = !isTranscriptOpen">
-				<img class="arrow" src="../assets/angle-double-left.svg" alt="" />
-			</button>
-			<div class="transcript-content-panel">
-				<h3 class="panel-title">Transcript</h3>
-				<div class="transcript-container">
-					<div class="transcript-item-container">
-						<p class="transcript-text">TimestampsStart --> TimestampsEnd</p>
-						<p class="subtitle">Untertitlel, alsdm , ffhfewoh ewioiwefj w</p>
-					</div>
-					<div class="transcript-item-container">
-						<p class="transcript-text">TimestampsStart --> TimestampsEnd</p>
-						<p class="subtitle">Untertitlel, alsdm , ffhfewoh ewioiwefj w</p>
-					</div>
-					<div class="transcript-item-container">
-						<p class="transcript-text">TimestampsStart --> TimestampsEnd</p>
-						<p class="subtitle">Untertitlel, alsdm , ffhfewoh ewioiwefj w</p>
-					</div>
-					<div class="transcript-item-container">
-						<p class="transcript-text">TimestampsStart --> TimestampsEnd</p>
-						<p class="subtitle">Untertitlel, alsdm , ffhfewoh ewioiwefj w</p>
-					</div>
-					<div class="transcript-item-container">
-						<p class="transcript-text">TimestampsStart --> TimestampsEnd</p>
-						<p class="subtitle">Untertitlel, alsdm , ffhfewoh ewioiwefj w</p>
-					</div>
+	<div class="main-container">
+		<div class="video-container">
+			<div class="transcript-panel" :class="{ open: isTranscriptOpen }">
+				<button class="toggle-content-btn-left" @click="isTranscriptOpen = !isTranscriptOpen">
+					<img class="arrow" src="../assets/angle-double-left.svg" alt="" />
+				</button>
+				<div class="transcript-content-panel">
+					<h3 class="panel-title">Transcript</h3>
+					<ul v-if="transcripts.length">
+						<li
+							v-for="(transcript, index) in transcripts"
+							:key="index"
+							class="cursor-pointer text-blue-600 hover:underline mb-2"
+						>
+							{{ formatTime(transcript.start) }} –▶ {{ formatTime(transcript.end) }}
+							<p class="subtitle">{{ transcript.text }}</p>
+						</li>
+					</ul>
 				</div>
 			</div>
-		</div>
 
-		<video ref="videoRef" class="video" @loadedmetadata="setDuration" :src="videoUrl" @timeupdate="updateTime">
-			<track src="../data/transcripts/transcript.vtt" kind="subtitles" srclang="en" label="English" />
-		</video>
+			<video ref="videoRef" class="video" @loadedmetadata="setDuration" :src="videoUrl" @timeupdate="updateTime">
+				<track src="../data/transcripts/transcript.vtt" kind="subtitles" srclang="en" label="English" />
+			</video>
 
-		<div class="chapters-panel" :class="{ open: isChaptersOpen }">
-			<div class="chapters-content-panel">
-				<h3 class="panel-title">Chapters</h3>
-				<div class="transcript-container">
-					<div class="chapters-item-container">
-						<p class="chapters-text">Chapter id</p>
-						<p class="subtitle">Untertitlel, alsdm , ffhfewoh ewioiwefj w</p>
-					</div>
-				</div>
-			</div>
-			<button class="toggle-content-btn-right" @click="isChaptersOpen = !isChaptersOpen">
-				<img class="arrow" src="../assets/angle-double-right.svg" alt="" />
-			</button>
-		</div>
-	</div>
-
-	<div class="controls-container">
-		<div class="progress-bar-container">
-			<input class="progress-bar" type="range" min="0" :max="duration" :value="currentTime" step="0.004" />
-		</div>
-		<div class="controls">
-			<div class="current_time">
-				<p>
-					{{ formatTime(currentTime) }}/ <span>{{ formatTime(duration) }}</span>
-				</p>
-				<p class="chapter">{{ currentChapter }}</p>
-			</div>
-			<div class="control-group">
-				<button :class="['rounded-left', { clicked: isClicked }]" @click="rewind">
-					<img src="@/assets/rewind.svg" alt="Zurückspulen" />
-				</button>
-				<button :class="['not-rounded', { clicked: isClicked }]" @click="togglePlay">
-					<img src="@/assets/play.svg" v-if="!isPlaying" />
-					<img src="@/assets/play_pause.svg" v-if="isPlaying" />
-				</button>
-				<button :class="['rounded-right', { clicked: isClicked }]" @click="forward">
-					<img src="@/assets/forward.svg" alt="Vorspulen" />
-				</button>
-			</div>
-			<div class="volume-container">
-				<button :class="['rounded-left', { clicked: isClicked }]" @click="volumeDown">
-					<img src="@/assets/volume_down.svg" alt="volume-down" />
-				</button>
-				<button
-					:class="['not-rounded', { clicked: isClicked }]"
-					@click="mute"
-					:style="{ backgroundColor: muteBtnColor }"
-				>
-					<img src="@/assets/volume_mute.svg" />
-				</button>
-				<button :class="['rounded-right', { clicked: isClicked }]" @click="volumeUp">
-					<img src="@/assets/volume_up.svg" alt="volume-up" />
-				</button>
-			</div>
-			<div class="settings-container">
-				<Modal
-					:visible="showModal"
-					:isSubtitles="isSubtitles"
-					@toggle-subtitles="isSubtitles = !isSubtitles"
-					@speed-up="speedUp"
-					@speed-down="speedDown"
-				/>
-				<button :class="['rounded-left', { clicked: isClicked }]" @click="showModal = !showModal">
-					<img src="@/assets/settings-sliders.svg" />
-				</button>
-
-				<button :class="['rounded-right', { clicked: isClicked }]" @click="toggleFullscreen">
-					<img src="@/assets/fullscreen.svg" alt="Vollbild" />
-				</button>
-			</div>
-		</div>
-		<div class="mobile-container">
-			<div class="mobile-transcript">
-				<h3>Transcript</h3>
-			</div>
-			<div class="mobile-chapters">
-				<h3 @click="isChaptersOpen = !isChaptersOpen" class="mobile-chapters-title">
-					Chapters
-					<img class="arrow" src="@/assets/chevron-double-down.svg" v-if="!isChaptersOpen" />
-					<img class="arrow" src="@/assets/chevron-double-up.svg" v-if="isChaptersOpen" />
-				</h3>
-				<div v-if="isChaptersOpen">
+			<div class="chapters-panel" :class="{ open: isChaptersOpen }">
+				<div class="chapters-content-panel">
+					<h3 class="panel-title">Chapters</h3>
 					<ul v-if="chapters.length">
 						<li
 							v-for="(chapter, index) in chapters"
 							:key="index"
 							class="cursor-pointer text-blue-600 hover:underline mb-2"
-							@click="seekTo(chapter.start)"
+							@click="() => seekTo(chapter.start)"
 						>
 							▶ {{ formatTime(chapter.end) }} – {{ chapter.title }}
 						</li>
 					</ul>
-
 					<p v-else>Lade Kapitel...</p>
 				</div>
+				<button class="toggle-content-btn-right" @click="isChaptersOpen = !isChaptersOpen">
+					<img class="arrow" src="../assets/angle-double-right.svg" alt="" />
+				</button>
 			</div>
+		</div>
+
+		<div class="controls-container">
+			<div class="progress-bar-container">
+				<input class="progress-bar" type="range" min="0" :max="duration" :value="currentTime" step="0.004" />
+			</div>
+			<div class="controls">
+				<div class="current_time">
+					<p>
+						{{ formatTime(currentTime) }}/ <span>{{ formatTime(duration) }}</span>
+					</p>
+					<p class="chapter">{{ currentChapter }}</p>
+				</div>
+				<div class="main-controls">
+					<div class="control-group">
+						<button :class="['rounded-left', { clicked: isClicked }]" @click="rewind">
+							<img src="@/assets/rewind.svg" alt="Zurückspulen" />
+						</button>
+						<button :class="['not-rounded', { clicked: isClicked }]" @click="togglePlay">
+							<img src="@/assets/play.svg" v-if="!isPlaying" />
+							<img src="@/assets/play_pause.svg" v-if="isPlaying" />
+						</button>
+						<button :class="['rounded-right', { clicked: isClicked }]" @click="forward">
+							<img src="@/assets/forward.svg" alt="Vorspulen" />
+						</button>
+					</div>
+					<div class="volume-container">
+						<button :class="['rounded-left', { clicked: isClicked }]" @click="volumeDown">
+							<img src="@/assets/volume_down.svg" alt="volume-down" />
+						</button>
+						<button
+							:class="['not-rounded', { clicked: isClicked }]"
+							@click="mute"
+							:style="{ backgroundColor: muteBtnColor }"
+						>
+							<img src="@/assets/volume_mute.svg" />
+						</button>
+						<button :class="['rounded-right', { clicked: isClicked }]" @click="volumeUp">
+							<img src="@/assets/volume_up.svg" alt="volume-up" />
+						</button>
+					</div>
+					<div class="settings-container">
+						<Modal
+							:visible="showModal"
+							:isSubtitles="isSubtitles"
+							@toggle-subtitles="isSubtitles = !isSubtitles"
+							@speed-up="speedUp"
+							@speed-down="speedDown"
+						/>
+						<button :class="['rounded-left', { clicked: isClicked }]" @click="showModal = !showModal">
+							<img src="@/assets/settings-sliders.svg" />
+						</button>
+
+						<button :class="['rounded-right', { clicked: isClicked }]" @click="toggleFullscreen">
+							<img src="@/assets/fullscreen.svg" alt="Vollbild" />
+						</button>
+					</div>
+				</div>
+			</div>
+			<MobileContainer
+				:transcripts="transcripts"
+				:chapters="chapters"
+				:isMobileTranscriptOpen="isTranscriptOpen"
+				:isMobileChaptersOpen="isChaptersOpen"
+				v-if="true"
+			/>
 		</div>
 	</div>
 </template>
@@ -344,25 +305,20 @@ function seekTo(seconds: number) {
 	overflow: hidden;
 	transition: width 0.3s ease;
 	height: auto;
+	width: auto;
 }
-.transcript-panel,
-.chapters-panel {
-	width: 60px;
-}
-.transcript-panel.open {
-	width: 600px;
-}
+.transcript-panel.open,
 .chapters-panel.open {
-	width: 600px;
+	width: 60%;
 }
+
 .transcript-content-panel,
 .chapters-content-panel {
 	display: none;
 	padding: 20px;
 	background-color: #f5f5f5;
-	width: 600px;
+	width: 100%;
 }
-
 .transcript-panel.open .transcript-content-panel,
 .chapters-panel.open .chapters-content-panel {
 	display: block;
@@ -382,7 +338,6 @@ function seekTo(seconds: number) {
 .toggle-content-btn-left {
 	border-top-right-radius: 2px;
 	border-bottom-right-radius: 2px;
-	margin-left: auto;
 }
 .toggle-content-btn-right {
 	border-top-left-radius: 2px;
@@ -392,7 +347,6 @@ function seekTo(seconds: number) {
 	width: 20px;
 	height: 20px;
 }
-/* Styles for the video player controls */
 .controls-container {
 	display: block;
 	width: 100%;
@@ -430,16 +384,21 @@ function seekTo(seconds: number) {
 }
 .controls {
 	display: flex;
-	justify-content: space-around;
+	justify-content: space-evenly;
 	align-items: center;
 	flex-wrap: wrap;
-	gap: 10px;
 	max-width: 1000px;
 	width: 100%;
 	padding: 10px;
-	margin: -10px auto;
+	margin: 0 auto 10px auto;
 	border-bottom-left-radius: 15px;
 	border-bottom-right-radius: 15px;
+}
+.main-controls {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
 }
 .control-group {
 	display: flex;
@@ -453,29 +412,46 @@ function seekTo(seconds: number) {
 	align-items: center;
 	gap: 0px;
 }
-.mobile-container {
-	justify-content: space-between;
+.main-container {
 	display: flex;
 	flex-direction: column;
-	align-items: center;
-	padding: 10px;
-	background-color: #eff4fa;
-	border-top: #61de00 5px solid;
-	margin-top: 10px;
+	height: auto;
 }
-.mobile-transcript,
-.mobile-chapters {
-	border-bottom: #61de00 2px solid;
-	width: 100%;
-	padding: 5px;
+@media (max-width: 1070px) {
+	.toggle-content-btn-left {
+		border-bottom-left-radius: 0px;
+	}
+	.toggle-content-btn-right {
+		border-bottom-right-radius: 0px;
+	}
 }
-.mobile-transcript {
-	margin-bottom: 8px;
+@media (max-width: 865px) {
+	.toggle-content-btn-left {
+		display: none;
+	}
+	.toggle-content-btn-right {
+		display: none;
+	}
+	.video {
+		border-top-left-radius: 12px;
+		border-top-right-radius: 12px;
+	}
 }
-ul {
-	overflow-y: auto;
-	max-height: 200px;
-	padding: 0;
-	margin: 0;
+@media (max-width: 790px) {
+	.main-controls {
+		display: flex;
+		flex-direction: row; /* Wichtig: vertikale Anordnung */
+		gap: 1rem; /* Abstand zwischen den Elementen */
+	}
+	.controls-container {
+		border-bottom-left-radius: 0px;
+		border-bottom-right-radius: 0px;
+	}
+}
+@media (max-width: 600px) {
+	.video {
+		border-top-left-radius: 0px;
+		border-top-right-radius: 0px;
+	}
 }
 </style>
