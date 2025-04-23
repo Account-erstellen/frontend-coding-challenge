@@ -1,5 +1,6 @@
 import type { Chapter } from "../types/chapter.ts";
 
+//This function can be adjusted depending on whether it receives a URL to a file or a URL to an API that returns the data
 export async function fetchChapters(url: string) {
 	const response = await fetch(url);
 	const xmlText = await response.text();

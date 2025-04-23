@@ -24,64 +24,11 @@
 	padding: 0;
 	display: f;
 }
-
 #app {
 	max-width: 1280px;
 	margin: 0px auto;
 	padding: 2rem;
 	text-align: center;
-}
-.video-container {
-	display: flex;
-	justify-content: center;
-	align-items: stretch;
-	width: 100%;
-	height: auto;
-	max-width: 1076px;
-	margin: 0 auto;
-}
-.controls-container {
-	display: block;
-	width: 100%;
-	max-width: 1000px;
-	height: auto;
-	margin: 0 auto;
-	border-bottom-left-radius: 15px;
-	border-bottom-right-radius: 15px;
-	background-color: #002e78;
-	box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);
-}
-.settings-container {
-	position: relative;
-	display: inline-block;
-}
-.video {
-	width: 100%;
-	max-width: 1000px;
-	height: auto;
-	display: block;
-	background-color: black;
-	box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);
-}
-.chapter {
-	color: #eff4fa;
-	font-size: 15px;
-	max-width: 450px;
-	flex: 1 1 auto;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-}
-.current_time {
-	color: #61de00;
-	font-size: 20px;
-	text-align: center;
-	margin: 10px 0;
-	max-width: 400px; /* Maximale Breite für größere Bildschirme */
-	width: 100%; /* Auf mobilen Geräten 100% Breite */
 }
 button {
 	background-color: #eff4fa;
@@ -112,7 +59,10 @@ button.clicked {
 	border-top-left-radius: 12px;
 	border-bottom-left-radius: 12px;
 }
-
+.arrow {
+	width: 20px;
+	height: 20px;
+}
 @media (max-width: 600px) {
 	.button img {
 		width: 15px;
@@ -122,10 +72,6 @@ button.clicked {
 		padding-top: 2rem;
 		padding-left: 0;
 		padding-right: 0;
-	}
-	.controls-container {
-		border-bottom-left-radius: 0px;
-		border-bottom-right-radius: 0px;
 	}
 	.control-group {
 		gap: 1px;

@@ -1,5 +1,6 @@
 import type { TranscriptItem } from "../types/transcript";
 
+//This function can be adjusted depending on whether it receives a URL to a file or a URL to an API that returns the data
 export async function fetchTranscript(url: string) {
 	const response = await fetch(url);
 	const vttText = await response.text();
