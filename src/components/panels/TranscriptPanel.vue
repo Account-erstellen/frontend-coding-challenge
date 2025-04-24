@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref } from "vue";
 import { formatTime } from "../../composables/formatFunctions";
 
 defineProps<{
@@ -56,7 +55,7 @@ li span {
 	flex-direction: column;
 	align-items: center;
 	overflow: auto;
-	height: 577x;
+	max-height: 577x;
 	background-color: #f5f5f5;
 }
 .arrow {

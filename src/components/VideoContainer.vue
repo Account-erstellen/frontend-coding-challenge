@@ -71,7 +71,7 @@ const handleSeek = (newTime: number) => {
 
 <template>
 	<div class="video-container">
-		<button class="toggle-content-btn-left" @click="isTranscriptOpen = !isTranscriptOpen">
+		<button class="toggle-content-btn-left" @click="isTranscriptOpen = !isTranscriptOpen" v-if="!videoError">
 			<img class="arrow" src="@/assets/angle-double-left.svg" alt="" />
 		</button>
 		<TranscriptPanel :transcripts="transcripts" v-if="isTranscriptOpen" />
@@ -92,7 +92,7 @@ const handleSeek = (newTime: number) => {
 		</div>
 
 		<ChaptersPanel :chapters="chapters" v-if="isChaptersOpen" />
-		<button class="toggle-content-btn-right" @click="isChaptersOpen = !isChaptersOpen">
+		<button class="toggle-content-btn-right" @click="isChaptersOpen = !isChaptersOpen" v-if="!videoError">
 			<img class="arrow" src="@/assets/angle-double-right.svg" alt="" />
 		</button>
 	</div>
