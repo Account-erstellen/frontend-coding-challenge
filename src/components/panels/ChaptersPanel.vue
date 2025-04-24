@@ -27,7 +27,7 @@ const videoApi = inject<VideoAPI>("videoApi");
 ul {
 	margin-top: 10px;
 	padding: 10px;
-	max-height: 545px;
+	max-height: 700px;
 }
 li {
 	cursor: pointer;
@@ -59,7 +59,7 @@ li:hover {
 	flex-direction: column;
 	align-items: center;
 	overflow: auto;
-	max-height: 577x;
+	max-height: 577px;
 	background-color: #f5f5f5;
 }
 @media (max-width: 1070px) {

@@ -55,7 +55,7 @@ li span {
 	flex-direction: column;
 	align-items: center;
 	overflow: auto;
-	max-height: 577x;
+	max-height: 577px;
 	background-color: #f5f5f5;
 }
 .arrow {
