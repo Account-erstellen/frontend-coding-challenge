@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { inject, ref, type Ref } from "vue";
 
-import { formatTime } from "../composables/functions";
+import { formatTime } from "../composables/formatFunctions";
 import Modal from "../components/universal/Modal.vue";
 import MobileContainer from "../components/mobile/MobileContainer.vue";
 import type { TranscriptItem } from "../types/transcript";
@@ -145,7 +145,7 @@ function triggerClickEffect() {
 				:max="props.duration"
 				:value="props.currentTime"
 				step="0.004"
-				@input ="onSeek"
+				@input="onSeek"
 			/>
 		</div>
 		<div class="controls">
@@ -210,7 +210,7 @@ function triggerClickEffect() {
 		/>
 	</div>
 </template>
-<style scoped>
+<style>
 .controls-container {
 	display: block;
 	width: 100%;
@@ -231,8 +231,7 @@ function triggerClickEffect() {
 	width: 100%;
 	padding: 10px;
 	margin: 0 auto 10px auto;
-	border-bottom-left-radius: 15px;
-	border-bottom-right-radius: 15px;
+	border-radius: 15px;
 }
 .progress-bar {
 	-webkit-appearance: none;
@@ -287,8 +286,9 @@ function triggerClickEffect() {
 		gap: 1rem; /* Abstand zwischen den Elementen */
 	}
 	.controls-container {
-		border-bottom-left-radius: 0px;
-		border-bottom-right-radius: 0px;
+		border-bottom-left-radius: 12px;
+		border-bottom-right-radius: 12px;
 	}
+
 }
 </style>

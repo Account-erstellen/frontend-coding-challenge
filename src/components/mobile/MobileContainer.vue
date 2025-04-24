@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { inject, ref, type Ref } from "vue";
-import { formatTime } from "../../composables/functions";
+import { formatTime } from "../../composables/formatFunctions";
 import type { TranscriptItem } from "../../types/transcript";
 import type { Chapter } from "../../types/chapter";
 
@@ -126,7 +126,6 @@ ul {
 		border-bottom-right-radius: 12px;
 		display: flex;
 	}
-
 }
 @media (max-width: 600px) {
 	.mobile-container {
