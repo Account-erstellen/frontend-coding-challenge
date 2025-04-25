@@ -45,9 +45,6 @@ li span {
 	color: #61de00;
 	margin-right: 5px;
 }
-li:hover {
-	background-color: #e0e0e0;
-}
 .panel-title {
 	color: #001f52;
 	border-bottom: #002e78 1px solid;

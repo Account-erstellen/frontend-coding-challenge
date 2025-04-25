@@ -3,21 +3,38 @@ import { formatTime } from "../../composables/formatFunctions";
 
 defineProps<{
 	transcripts: { id: number; text: string; start: number; end: number }[];
+	currentTime: number;
 }>();
 </script>
 <template>
 	<div class="transcript-panel">
-		<h3 class="panel-title">Transcript</h3>
+		<h3 v-if="transcripts.length" class="panel-title">Transcript</h3>
 		<ul v-if="transcripts.length">
 			<li
 				v-for="(transcript, index) in transcripts"
 				:key="index"
-				class="cursor-pointer text-blue-600 hover:underline mb-2"
+				:class="[
+					'cursor-pointer mb-2 p-2 rounded',
+					currentTime >= transcript.start && currentTime <= transcript.end
+						? 'bg-gray-800 text-white'
+						: 'text-blue-600 hover:underline',
+				]"
+				@click="$emit('seek', transcript.start)"
 			>
-				<span>{{ formatTime(transcript.start) }} –▶ {{ formatTime(transcript.end) }}</span>
+				<span
+					:class="[
+						'font-bold mr-2',
+						currentTime >= transcript.start && currentTime <= transcript.end
+							? 'text-green-400'
+							: 'text-[#61de00]',
+					]"
+				>
+					{{ formatTime(transcript.start) }} –▶ {{ formatTime(transcript.end) }}
+				</span>
 				<p class="subtitle">{{ transcript.text }}</p>
 			</li>
 		</ul>
+		<p v-else>Keine Untertitel vorhanden</p>
 	</div>
 </template>
 <style scoped>
@@ -34,12 +51,9 @@ li {
 	border-radius: 5px;
 	font-weight: 400;
 }
-li:hover {
-	background-color: #e0e0e0;
-}
 li span {
 	font-weight: 700;
-	color: #61de00;
+	color: #002e78;
 	margin-right: 5px;
 }
 
@@ -62,11 +76,33 @@ li span {
 	width: 20px;
 	height: 20px;
 }
-
 .subtitle {
+	margin-top: 500px;
 	font-size: medium;
 	color: #002e78;
 }
+.bg-gray-800 {
+	background-color: #e7e7e7;
+}
+.text-white {
+	color: white;
+}
+.text-green-400 {
+	color: #61de00;
+}
+.p-2 {
+	padding: 0.5rem;
+}
+.mb-2 {
+	margin-bottom: 0.5rem;
+}
+.rounded {
+	border-radius: 0.25rem;
+}
+.font-bold {
+	font-weight: 700;
+}
+
 @media (max-width: 1070px) {
 	.toggle-content-btn-left {
 		border-bottom-left-radius: 0px;

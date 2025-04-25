@@ -18,6 +18,7 @@ const props = defineProps<{
 
 interface VideoAPI {
 	videoRef: Ref<HTMLVideoElement | null>;
+	trackRef: Ref<HTMLTrackElement | null>;
 	seekTo: (t: number) => void;
 }
 const videoApi = inject<VideoAPI>("videoApi");
@@ -30,8 +31,9 @@ const isChaptersOpen = ref<boolean>(false);
 const isTranscriptOpen = ref<boolean>(false);
 const isClicked = ref(false);
 const muteBtnColor = ref<string>("#eff4fa");
+const subtitlesVisible = ref<boolean>(false);
 
-const emit = defineEmits(["seek", "update:isSubtitles"]);
+const emit = defineEmits(["seek"]);
 
 function onSeek(event: Event) {
 	const target = event.target as HTMLInputElement;
@@ -124,6 +126,17 @@ const mute = () => {
 		toggleColor();
 	}
 };
+const toggleSubtitles = () => {
+	const track = videoApi?.trackRef?.value;
+	if (!track) {
+		console.warn("trackRef not ready or not found");
+		return;
+	}
+
+	const mode = (track as any).mode;
+	(track as any).mode = mode === "showing" ? "hidden" : "showing";
+	subtitlesVisible.value = (track as any).mode === "showing";
+};
 function toggleColor() {
 	muteBtnColor.value = muteBtnColor.value === "#eff4fa" ? "#f34134" : "#eff4fa";
 }
@@ -187,9 +200,9 @@ function triggerClickEffect() {
 					<Modal
 						:visible="showModal"
 						:isSubtitles="isSubtitles"
-						@toggle-subtitles="$emit('update:isSubtitles', !isSubtitles)"
 						@speed-up="speedUp"
 						@speed-down="speedDown"
+						@toggle-subtitles="toggleSubtitles"
 					/>
 					<button :class="['rounded-left', { clicked: isClicked }]" @click="showModal = !showModal">
 						<img src="@/assets/settings-sliders.svg" />
@@ -289,6 +302,5 @@ function triggerClickEffect() {
 		border-bottom-left-radius: 12px;
 		border-bottom-right-radius: 12px;
 	}
-
 }
 </style>
