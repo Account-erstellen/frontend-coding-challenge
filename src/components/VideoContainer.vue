@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { onMounted, provide, ref, watch } from "vue";
 
-import ControllsContainer from "../components/ControllsContainer.vue";
+import ControllsContainer from "./ControllsContainer.vue";
 import ChaptersPanel from "./panels/ChaptersPanel.vue";
 import TranscriptPanel from "./panels/TranscriptPanel.vue";
 
-import { type Chapter } from "../types/chapter";
-import { type TranscriptItem } from "../types/transcript";
+import { type Chapter } from "../types/chapter.ts";
+import { type TranscriptItem } from "../types/transcript.ts";
 import { fetchChapters } from "../composables/fetchChapters.ts";
-import { fetchTranscript } from "../composables/fetchTranscript.ts";
+import { fetchAndFormatTranscript } from "../composables/fetchTranscript.ts";
 import { fetchVideo } from "../composables/fetchVideo.ts";
 
 const videoRef = ref<HTMLVideoElement | null>(null);
@@ -31,21 +31,25 @@ const isTranscriptOpen = ref<boolean>(false);
 //Fetch chapters and transcript on mount of the app
 onMounted(async () => {
 	//Fetch Links to Video URL
-	//videoUrl.value = loadWebmVideo("https://mainline.i3s.unice.fr/mooc/elephants-dream-medium.webm");
-	fetchVideo(videoRef.value)
-	//TODOLinks to the chapters file changen https://meetyoo-code-challenge.s3.eu-central-1.amazonaws.com/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/full.xml
-	chapters.value =
-		(await fetchChapters(
-			"https://meetyoo-code-challenge.s3.eu-central-1.amazonaws.com/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/full.xml"
-		)) || [];
-	console.log("Chapters:", chapters.value);
-	//TODOLinks to the transcript file changen https://meetyoo-code-challenge.s3.eu-central-1.amazonaws.com/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/transcript.vtt
-	const transcriptResult = await fetchTranscript("./transcript/transcript.vtt");
-	if (Array.isArray(transcriptResult)) {
+	fetchVideo(videoRef.value);
+	const fetchedChapters = await fetchChapters(
+		"https://meetyoo-code-challenge.s3.eu-central-1.amazonaws.com/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/full.xml"
+	);
+	const transcriptResult = await fetchAndFormatTranscript(
+		"https://meetyoo-code-challenge.s3.eu-central-1.amazonaws.com/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/transcript.vtt"
+	);
+	if (Array.isArray(fetchedChapters) && Array.isArray(transcriptResult)) {
+		chapters.value = fetchedChapters;
 		transcripts.value = transcriptResult;
 	} else {
-		console.error("Error fetching transcript:", transcriptResult.error);
-		transcripts.value = [];
+		if (!Array.isArray(fetchedChapters)) {
+			console.error("Error fetching chapters:", fetchedChapters.error);
+			chapters.value = [];
+		}
+		if (!Array.isArray(transcriptResult)) {
+			console.error("Error fetching transcript:", transcriptResult.error);
+			transcripts.value = [];
+		}
 	}
 	transcriptFile.value = fetch("./transcript/transcript.vtt");
 });
@@ -128,7 +132,17 @@ const handleSeek = (newTime: number) => {
 	/>
 </template>
 
-<style>
+<style lang="scss">
+$max-video-width: 1000px;
+$box-shadow-dark: 10px 10px 15px rgba(0, 0, 0, 0.3);
+$box-shadow-error: 15px 20px 25px rgba(0, 0, 0, 0.2);
+$main-color: #eff4fa;
+$highlight-color: #61de00;
+$btn-bg: #ffffff;
+$btn-padding: 12px;
+$btn-max-height: 577px;
+$btn-max-width: 37px;
+
 .video-container {
 	display: flex;
 	justify-content: center;
@@ -139,31 +153,46 @@ const handleSeek = (newTime: number) => {
 	max-height: 650px;
 	margin: 0 auto;
 }
-.video {
+
+.video,
+.no-video {
 	width: 100%;
-	max-width: 1000px;
+	max-width: $max-video-width;
+}
+
+.video {
 	min-height: 50%;
 	display: block;
 	background-color: black;
-	box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);
+	box-shadow: $box-shadow-dark;
+
+	@media (max-width: 865px) {
+		border-top-left-radius: 12px;
+		border-top-right-radius: 12px;
+	}
+
+	@media (max-width: 600px) {
+		border-top-left-radius: 0px;
+		border-top-right-radius: 0px;
+	}
 }
 
 .no-video {
-	width: 100%;
-	max-width: 1000px;
 	height: auto;
 	margin: 0 auto;
 	display: flex;
 	justify-content: center;
 }
+
 .error-img {
 	width: 70%;
 	height: auto;
 	border-radius: 12px;
-	box-shadow: 15px 20px 25px rgba(0, 0, 0, 0.2);
+	box-shadow: $box-shadow-error;
 }
+
 .chapter {
-	color: #eff4fa;
+	color: $main-color;
 	font-size: 15px;
 	max-width: 450px;
 	flex: 1 1 auto;
@@ -174,69 +203,48 @@ const handleSeek = (newTime: number) => {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+
 .current_time {
-	color: #61de00;
+	color: $highlight-color;
 	font-size: 20px;
 	text-align: center;
 	margin: 10px 0;
-	max-width: 400px; /* Maximale Breite für größere Bildschirme */
-	width: 100%; /* Auf mobilen Geräten 100% Breite */
+	max-width: 400px;
+	width: 100%;
 }
-.toggle-content-btn-right {
-	max-width: 37px;
-	max-height: 577px;
-	background-color: #ffffff;
+
+%toggle-button {
+	max-width: $btn-max-width;
+	max-height: $btn-max-height;
+	background-color: $btn-bg;
 	border: none;
 	cursor: pointer;
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	padding: 12px;
+	padding: $btn-padding;
+}
+
+.toggle-content-btn-right {
+	@extend %toggle-button;
 	border-top-left-radius: 2px;
 	border-bottom-left-radius: 2px;
+
+	@media (max-width: 1070px), (max-width: 865px) {
+		display: none;
+		border-bottom-left-radius: 0;
+	}
 }
+
 .toggle-content-btn-left {
-	max-width: 37px;
-	max-height: 577px;
-	background-color: #ffffff;
-	border: none;
-	cursor: pointer;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	padding: 12px;
+	@extend %toggle-button;
 	border-top-right-radius: 2px;
 	border-bottom-right-radius: 2px;
-}
-@media (max-width: 865px) {
-	.video {
-		border-top-left-radius: 12px;
-		border-top-right-radius: 12px;
-	}
-}
-@media (max-width: 600px) {
-	.video {
-		border-top-left-radius: 0px;
-		border-top-right-radius: 0px;
-	}
-}
-@media (max-width: 1070px) {
-	.toggle-content-btn-left {
-		border-bottom-left-radius: 0px;
-	}
-	.toggle-content-btn-left {
+
+	@media (max-width: 1070px) {
 		display: none;
-	}
-	.toggle-content-btn-right {
-		border-bottom-left-radius: 0px;
-	}
-	.toggle-content-btn-right {
-		display: none;
+		border-bottom-left-radius: 0;
 	}
 }
-@media (max-width: 865px) {
-	.toggle-content-btn-right {
-		display: none;
-	}
-}
+
 </style>

@@ -13,7 +13,7 @@ const videoApi = inject<VideoAPI>("videoApi");
 </script>
 <template>
 	<div class="chapters-panel">
-		<h3 class="panel-title" v-if="chapters.length">Chapters</h3>
+		<h3 class="panel-title" v-if="chapters.length">Kapitel</h3>
 		<ul v-if="chapters.length">
 			<li v-for="(chapter, index) in chapters" :key="index" @click="() => videoApi?.seekTo(chapter.start)">
 				<span>{{ formatTime(chapter.end) }}</span> {{ chapter.title }}
@@ -23,48 +23,67 @@ const videoApi = inject<VideoAPI>("videoApi");
 	</div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
+$color-primary: #002e78;
+$color-secondary: #001f52;
+$color-highlight: #61de00;
+$bg-panel: #f5f5f5;
+$border-radius: 5px;
+$spacing-small: 5px;
+$spacing-medium: 6px;
+$spacing-large: 10px;
+$max-panel-height: 577px;
+$max-ul-height: 700px;
+$break-md: 1070px;
+$break-sm: 865px;
+
 ul {
-	margin-top: 10px;
-	padding: 10px;
-	max-height: 700px;
+	margin-top: $spacing-large;
+	padding: $spacing-large;
+	max-height: $max-ul-height;
+
+	li {
+		cursor: pointer;
+		color: $color-primary;
+		font-size: medium;
+		padding: $spacing-medium;
+		border-radius: $border-radius;
+		font-weight: 400;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		span {
+			font-weight: 700;
+			color: $color-highlight;
+			margin-right: $spacing-small;
+		}
+	}
 }
-li {
-	cursor: pointer;
-	color: #002e78;
-	font-size: medium;
-	padding: 6px;
-	border-radius: 5px;
-	font-weight: 400;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-li span {
-	font-weight: 700;
-	color: #61de00;
-	margin-right: 5px;
-}
+
 .panel-title {
-	color: #001f52;
-	border-bottom: #002e78 1px solid;
+	color: $color-secondary;
+	border-bottom: 1px solid $color-primary;
 	text-align: center;
 	width: 100%;
 }
+
 .chapters-panel {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	overflow: auto;
-	max-height: 577px;
-	background-color: #f5f5f5;
+	max-height: $max-panel-height;
+	background-color: $bg-panel;
 }
-@media (max-width: 1070px) {
+
+@media (max-width: $break-md) {
 	.toggle-content-btn-left {
-		border-bottom-left-radius: 0px;
+		border-bottom-left-radius: 0;
 	}
 }
-@media (max-width: 865px) {
+
+@media (max-width: $break-sm) {
 	.toggle-content-btn-right {
 		display: none;
 	}

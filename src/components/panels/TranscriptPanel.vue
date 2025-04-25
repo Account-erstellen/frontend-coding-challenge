@@ -8,7 +8,7 @@ defineProps<{
 </script>
 <template>
 	<div class="transcript-panel">
-		<h3 v-if="transcripts.length" class="panel-title">Transcript</h3>
+		<h3 v-if="transcripts.length" class="panel-title">Untertitel</h3>
 		<ul v-if="transcripts.length">
 			<li
 				v-for="(transcript, index) in transcripts"
@@ -17,7 +17,7 @@ defineProps<{
 					'cursor-pointer mb-2 p-2 rounded',
 					currentTime >= transcript.start && currentTime <= transcript.end
 						? 'bg-gray-800 text-white'
-						: 'text-blue-600 hover:underline',
+						: 'text-blue-600',
 				]"
 				@click="$emit('seek', transcript.start)"
 			>
@@ -37,29 +37,48 @@ defineProps<{
 		<p v-else>Keine Untertitel vorhanden</p>
 	</div>
 </template>
-<style scoped>
+<style lang="scss" scoped>
+// Farb- & Layoutvariablen
+$color-primary: #002e78;
+$color-secondary: #001f52;
+$color-highlight: #61de00;
+$color-panel-bg: #f5f5f5;
+$color-subtle-bg: #e7e7e7;
+$radius-sm: 5px;
+$radius-md: 0.25rem;
+$spacing-xs: 0.5rem;
+$spacing-s: 6px;
+$spacing-m: 10px;
+$spacing-l: 500px;
+$max-transcript: 577px;
+$max-list: 545px;
+$break-md: 1070px;
+$break-sm: 865px;
+
 ul {
-	margin-top: 10px;
-	padding: 10px;
-	max-height: 545px;
-}
-li {
-	cursor: pointer;
-	color: #002e78;
-	font-size: medium;
-	padding: 6px;
-	border-radius: 5px;
-	font-weight: 400;
-}
-li span {
-	font-weight: 700;
-	color: #002e78;
-	margin-right: 5px;
+	margin-top: $spacing-m;
+	padding: $spacing-m;
+	max-height: $max-list;
+
+	li {
+		cursor: pointer;
+		color: $color-primary;
+		font-size: medium;
+		padding: $spacing-s;
+		border-radius: $radius-sm;
+		font-weight: 400;
+
+		span {
+			font-weight: 700;
+			color: $color-primary;
+			margin-right: 5px;
+		}
+	}
 }
 
 .panel-title {
-	color: #001f52;
-	border-bottom: #002e78 1px solid;
+	color: $color-secondary;
+	border-bottom: 1px solid $color-primary;
 	text-align: center;
 	width: 100%;
 }
@@ -69,46 +88,52 @@ li span {
 	flex-direction: column;
 	align-items: center;
 	overflow: auto;
-	max-height: 577px;
-	background-color: #f5f5f5;
+	max-height: $max-transcript;
+	background-color: $color-panel-bg;
 }
+
 .arrow {
 	width: 20px;
 	height: 20px;
 }
+
 .subtitle {
-	margin-top: 500px;
+	margin-top: $spacing-l;
 	font-size: medium;
-	color: #002e78;
+	color: $color-primary;
 }
+
+// Utility-Klassen
 .bg-gray-800 {
-	background-color: #e7e7e7;
+	background-color: $color-subtle-bg;
 }
 .text-white {
 	color: white;
 }
 .text-green-400 {
-	color: #61de00;
+	color: $color-highlight;
 }
 .p-2 {
-	padding: 0.5rem;
+	padding: $spacing-xs;
 }
 .mb-2 {
-	margin-bottom: 0.5rem;
+	margin-bottom: $spacing-xs;
 }
 .rounded {
-	border-radius: 0.25rem;
+	border-radius: $radius-md;
 }
 .font-bold {
 	font-weight: 700;
 }
 
-@media (max-width: 1070px) {
+// Media Queries
+@media (max-width: $break-md) {
 	.toggle-content-btn-left {
-		border-bottom-left-radius: 0px;
+		border-bottom-left-radius: 0;
 	}
 }
-@media (max-width: 865px) {
+
+@media (max-width: $break-sm) {
 	.toggle-content-btn-left {
 		display: none;
 	}

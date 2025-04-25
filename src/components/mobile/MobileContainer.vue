@@ -26,7 +26,7 @@ const mobileChaptersOpen = ref(props.isMobileChaptersOpen);
 	<div class="mobile-container">
 		<div class="mobile-transcript-container">
 			<div class="mobile-transcript-title" @click="mobileTranscriptOpen = !mobileTranscriptOpen">
-				<h3>Transcript</h3>
+				<h3>Untertitel</h3>
 				<div class="mobile-transcript">
 					<div class="item-arrows">
 						<img class="arrow" src="@/assets/chevron-double-down.svg" v-if="!mobileTranscriptOpen" />
@@ -45,14 +45,14 @@ const mobileChaptersOpen = ref(props.isMobileChaptersOpen);
 						<p class="subtitle">{{ transcript.text }}</p>
 					</li>
 				</ul>
-				<p v-else>Lade Untertitel...</p>
+				<p v-else>Keine Untertitel vorhanden</p>
 			</div>
 		</div>
 
 		<div class="mobile-chapters-container">
 			<div @click="mobileChaptersOpen = !mobileChaptersOpen">
 				<div class="mobile-chapters-title">
-					<h3 class="mobile-chapters-title">Chapters</h3>
+					<h3 class="mobile-chapters-title">Kapitel</h3>
 					<div class="item-arrows">
 						<img class="arrow" src="@/assets/chevron-double-down.svg" v-if="!mobileChaptersOpen" />
 						<img class="arrow" src="@/assets/chevron-double-up.svg" v-if="mobileChaptersOpen" />
@@ -70,67 +70,80 @@ const mobileChaptersOpen = ref(props.isMobileChaptersOpen);
 						▶ {{ formatTime(chapter.end) }} – {{ chapter.title }}
 					</li>
 				</ul>
-				<p v-else>Lade Kapitel...</p>
+				<p v-else>Keine Kapitel vorhanden</p>
 			</div>
 		</div>
 	</div>
 </template>
 
-<style>
+<style lang="scss">
+$bg-light: #eff4fa;
+$highlight-border: #61de00;
+$radius-default: 12px;
+$spacing-small: 5px;
+$spacing-medium: 8px;
+$spacing-large: 10px;
+$break-md: 865px;
+$break-sm: 600px;
+
 .mobile-container {
 	justify-content: space-between;
 	display: none;
 	flex-direction: column;
 	align-items: center;
-	padding: 10px;
-	background-color: #eff4fa;
-	border-top: #61de00 5px solid;
-	margin-top: 10px;
+	padding: $spacing-large;
+	background-color: $bg-light;
+	border-top: 5px solid $highlight-border;
+	margin-top: $spacing-large;
+
+	@media (max-width: $break-md) {
+		display: flex;
+		border-bottom-left-radius: $radius-default;
+		border-bottom-right-radius: $radius-default;
+	}
+
+	@media (max-width: $break-sm) {
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
+	}
 }
+
 .mobile-transcript {
-	margin-bottom: 8px;
+	margin-bottom: $spacing-medium;
 }
+
 .mobile-transcript-title,
 .mobile-chapters-title {
 	display: flex;
 	width: 100%;
 	justify-content: space-between;
 	cursor: pointer;
+
+	h3 {
+		margin-right: $spacing-medium; // Abstand zwischen Text und Pfeil
+	}
 }
+
 .item-arrows {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 }
-.mobile-transcript-title h3,
-.mobile-chapters-title h3 {
-	margin-right: 8px; /* Etwas Abstand zwischen Text und Pfeil */
-}
+
 .mobile-chapters-container,
 .mobile-transcript-container {
-	margin-top: 5px;
+	margin-top: $spacing-small;
 	width: 100%;
 }
+
 .mobile-transcript-container {
-	margin-bottom: 10px;
+	margin-bottom: $spacing-large;
 }
+
 ul {
 	overflow-y: auto;
 	max-height: 200px;
 	padding: 0;
 	margin: 0;
-}
-@media (max-width: 865px) {
-	.mobile-container {
-		border-bottom-left-radius: 12px;
-		border-bottom-right-radius: 12px;
-		display: flex;
-	}
-}
-@media (max-width: 600px) {
-	.mobile-container {
-		border-bottom-left-radius: 0px;
-		border-bottom-right-radius: 0px;
-	}
 }
 </style>

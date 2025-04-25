@@ -199,7 +199,7 @@ function triggerClickEffect() {
 				<div class="settings-container">
 					<Modal
 						:visible="showModal"
-						:isSubtitles="isSubtitles"
+						:speed="videoApi?.videoRef?.value?.playbackRate ?? 1"
 						@speed-up="speedUp"
 						@speed-down="speedDown"
 						@toggle-subtitles="toggleSubtitles"
@@ -223,84 +223,102 @@ function triggerClickEffect() {
 		/>
 	</div>
 </template>
-<style>
+<style lang="scss">
+$max-width: 1000px;
+$bg-blue: #002e78;
+$box-shadow-controls: 10px 10px 15px rgba(0, 0, 0, 0.3);
+$progress-bg: #d4d4d4;
+$progress-thumb: #61de00;
+$outline-color: #001f52;
+$thumb-moz: #bebdbd;
+$media-radius-small: 12px;
+$media-break: 790px;
+
 .controls-container {
 	display: block;
 	width: 100%;
-	max-width: 1000px;
+	max-width: $max-width;
 	height: auto;
 	margin: 0 auto;
 	border-bottom-left-radius: 15px;
 	border-bottom-right-radius: 15px;
-	background-color: #002e78;
-	box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.3);
+	background-color: $bg-blue;
+	box-shadow: $box-shadow-controls;
+
+	@media (max-width: $media-break) {
+		border-bottom-left-radius: $media-radius-small;
+		border-bottom-right-radius: $media-radius-small;
+	}
 }
+
 .controls {
 	display: flex;
 	justify-content: space-evenly;
 	align-items: center;
 	flex-wrap: wrap;
-	max-width: 1000px;
+	max-width: $max-width;
 	width: 100%;
 	padding: 10px;
 	margin: 0 auto 10px auto;
 	border-radius: 15px;
 }
+
 .progress-bar {
 	-webkit-appearance: none;
 	width: 100%;
 	height: 25px;
-	background: #d4d4d4;
-	outline: #001f52;
+	background: $progress-bg;
+	outline: $outline-color;
 	opacity: 1;
 	-webkit-transition: 0.2s;
 	transition: opacity 0.2s;
+
+	&::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 15px;
+		height: 25px;
+		background: $progress-thumb;
+		cursor: pointer;
+	}
+
+	&::-moz-range-thumb {
+		width: 25px;
+		height: 25px;
+		background: $thumb-moz;
+		cursor: pointer;
+	}
 }
-.progress-bar::-webkit-slider-thumb {
-	-webkit-appearance: none;
-	appearance: none;
-	width: 15px;
-	height: 25px;
-	background: #61de00;
-	cursor: pointer;
-}
-.progress-bar::-moz-range-thumb {
-	width: 25px;
-	height: 25px;
-	background: #bebdbd;
-	cursor: pointer;
-}
+
 .main-controls {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	gap: 10px;
+
+	@media (max-width: $media-break) {
+		flex-direction: row;
+		gap: 1rem;
+	}
 }
+
 .control-group {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0px;
 	justify-content: center;
 }
+
 .volume-container {
 	display: flex;
 	justify-content: center;
 	align-items: center;
 	gap: 0px;
 }
+
 .settings-container {
 	position: relative;
 	display: inline-block;
 }
-@media (max-width: 790px) {
-	.main-controls {
-		display: flex;
-		flex-direction: row; /* Wichtig: vertikale Anordnung */
-		gap: 1rem; /* Abstand zwischen den Elementen */
-	}
-	.controls-container {
-		border-bottom-left-radius: 12px;
-		border-bottom-right-radius: 12px;
-	}
-}
+
 </style>
