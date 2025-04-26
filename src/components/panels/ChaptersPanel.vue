@@ -19,35 +19,47 @@ const videoApi = inject<VideoAPI>("videoApi");
 				<span>{{ formatTime(chapter.end) }}</span> {{ chapter.title }}
 			</li>
 		</ul>
-		<p v-else>Keine Kapitel vorhanden</p>
+		<p v-else class="no-chapters">Keine Kapitel vorhanden</p>
 	</div>
 </template>
 
 <style scoped lang="scss">
+// Farben
 $color-primary: #002e78;
 $color-secondary: #001f52;
 $color-highlight: #61de00;
-$bg-panel: #f5f5f5;
-$border-radius: 5px;
-$spacing-small: 5px;
-$spacing-medium: 6px;
-$spacing-large: 10px;
-$max-panel-height: 577px;
-$max-ul-height: 700px;
+$color-panel-bg: #f5f5f5;
+$color-subtle-bg: #e7e7e7;
+
+// Abstände
+$spacing-xs: 0.5rem;
+$spacing-s: 6px;
+$spacing-m: 10px;
+$spacing-l: 1rem; // Optional, falls benötigt
+
+// Border Radius
+$radius-sm: 5px;
+$radius-md: 0.25rem;
+
+// Max-Höhen
+$max-transcript: 577px;
+$max-list: 700px;
+
+// Breakpoints
 $break-md: 1070px;
 $break-sm: 865px;
 
 ul {
-	margin-top: $spacing-large;
-	padding: $spacing-large;
-	max-height: $max-ul-height;
+	margin-top: $spacing-m;
+	padding: $spacing-m;
+	max-height: $max-list;
 
 	li {
 		cursor: pointer;
 		color: $color-primary;
 		font-size: medium;
-		padding: $spacing-medium;
-		border-radius: $border-radius;
+		padding: $spacing-s;
+		border-radius: $radius-sm;
 		font-weight: 400;
 		display: flex;
 		justify-content: center;
@@ -56,7 +68,7 @@ ul {
 		span {
 			font-weight: 700;
 			color: $color-highlight;
-			margin-right: $spacing-small;
+			margin-right: $spacing-s;
 		}
 	}
 }
@@ -73,10 +85,19 @@ ul {
 	flex-direction: column;
 	align-items: center;
 	overflow: auto;
-	max-height: $max-panel-height;
-	background-color: $bg-panel;
+	max-height: $max-transcript;
+	background-color: $color-panel-bg;
 }
-
+.no-chapters {
+	color: $color-primary;
+	font-size: medium;
+	padding: $spacing-s;
+	border-radius: $radius-sm;
+	font-weight: 800;
+	text-align: center;
+	width: 100%;
+	margin-top: $spacing-m;
+}
 @media (max-width: $break-md) {
 	.toggle-content-btn-left {
 		border-bottom-left-radius: 0;

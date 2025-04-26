@@ -15,6 +15,7 @@ const props = defineProps<{
 	chapters: Chapter[];
 	isMobileTranscriptOpen: boolean;
 	isMobileChaptersOpen: boolean;
+	currentTime: number;
 }>();
 
 const videoApi = inject<VideoAPI>("videoApi");
@@ -39,9 +40,24 @@ const mobileChaptersOpen = ref(props.isMobileChaptersOpen);
 					<li
 						v-for="(transcript, index) in transcripts"
 						:key="index"
-						class="cursor-pointer text-blue-600 hover:underline mb-2"
+						:class="[
+							'cursor-pointer rounded',
+							currentTime >= transcript.start && currentTime <= transcript.end
+								? 'bg-gray-800'
+								: 'text-blue-600',
+						]"
+						@click="$emit('seek', transcript.start)"
 					>
-						{{ formatTime(transcript.start) }} –▶ {{ formatTime(transcript.end) }}
+						<span
+							:class="[
+								'font-bold mr-2',
+								currentTime >= transcript.start && currentTime <= transcript.end
+									? 'text-green-400'
+									: 'text-[#61de00]',
+							]"
+						>
+							{{ formatTime(transcript.start) }} –▶ {{ formatTime(transcript.end) }}
+						</span>
 						<p class="subtitle">{{ transcript.text }}</p>
 					</li>
 				</ul>
@@ -78,13 +94,36 @@ const mobileChaptersOpen = ref(props.isMobileChaptersOpen);
 
 <style lang="scss">
 $bg-light: #eff4fa;
+$color-subtle-bg: #e7e7e7;
+$color-highlight: #61de00;
+$color-primary: #002e78;
 $highlight-border: #61de00;
 $radius-default: 12px;
 $spacing-small: 5px;
 $spacing-medium: 8px;
 $spacing-large: 10px;
-$break-md: 865px;
+$break-md: 1070px;
 $break-sm: 600px;
+$radius-sm: 5px;
+$radius-md: 0.25rem;
+$spacing-xs: 0.5rem;
+$spacing-s: 6px;
+$spacing-m: 10px;
+$spacing-l: 500px;
+
+// Utility-Klassen
+.bg-gray-800 {
+	background-color: $color-subtle-bg;
+}
+.text-green-400 {
+	color: $color-highlight;
+}
+.rounded {
+	border-radius: $radius-md;
+}
+.font-bold {
+	font-weight: 500;
+}
 
 .mobile-container {
 	justify-content: space-between;
@@ -145,5 +184,18 @@ ul {
 	max-height: 200px;
 	padding: 0;
 	margin: 0;
+}
+li {
+	cursor: pointer;
+	color: $color-primary;
+	font-size: medium;
+	padding: $spacing-s;
+	border-radius: $radius-sm;
+	font-weight: 400;
+}
+span {
+	font-weight: 700;
+	color: $color-primary;
+	margin-right: 5px;
 }
 </style>

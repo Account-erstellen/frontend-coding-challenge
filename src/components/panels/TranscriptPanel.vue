@@ -14,7 +14,7 @@ defineProps<{
 				v-for="(transcript, index) in transcripts"
 				:key="index"
 				:class="[
-					'cursor-pointer mb-2 p-2 rounded',
+					'cursor-pointer rounded',
 					currentTime >= transcript.start && currentTime <= transcript.end
 						? 'bg-gray-800 text-white'
 						: 'text-blue-600',
@@ -23,7 +23,7 @@ defineProps<{
 			>
 				<span
 					:class="[
-						'font-bold mr-2',
+						'font-bold',
 						currentTime >= transcript.start && currentTime <= transcript.end
 							? 'text-green-400'
 							: 'text-[#61de00]',
@@ -34,24 +34,32 @@ defineProps<{
 				<p class="subtitle">{{ transcript.text }}</p>
 			</li>
 		</ul>
-		<p v-else>Keine Untertitel vorhanden</p>
+		<p v-else class="no-transcript">Keine Untertitel vorhanden</p>
 	</div>
 </template>
 <style lang="scss" scoped>
-// Farb- & Layoutvariablen
+// Farben
 $color-primary: #002e78;
 $color-secondary: #001f52;
 $color-highlight: #61de00;
 $color-panel-bg: #f5f5f5;
 $color-subtle-bg: #e7e7e7;
-$radius-sm: 5px;
-$radius-md: 0.25rem;
+
+// Abstände
 $spacing-xs: 0.5rem;
 $spacing-s: 6px;
 $spacing-m: 10px;
-$spacing-l: 500px;
+$spacing-l: 1rem; // Optional, falls benötigt
+
+// Border Radius
+$radius-sm: 5px;
+$radius-md: 0.25rem;
+
+// Max-Höhen
 $max-transcript: 577px;
-$max-list: 545px;
+$max-list: 700px;
+
+// Breakpoints
 $break-md: 1070px;
 $break-sm: 865px;
 
@@ -67,11 +75,14 @@ ul {
 		padding: $spacing-s;
 		border-radius: $radius-sm;
 		font-weight: 400;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 
 		span {
 			font-weight: 700;
-			color: $color-primary;
-			margin-right: 5px;
+			color: $color-highlight;
+			margin-right: $spacing-s;
 		}
 	}
 }
@@ -98,9 +109,20 @@ ul {
 }
 
 .subtitle {
-	margin-top: $spacing-l;
+	margin-top: 0px;
 	font-size: medium;
 	color: $color-primary;
+}
+
+.no-transcript {
+	color: $color-primary;
+	font-size: medium;
+	padding: $spacing-s;
+	border-radius: $radius-sm;
+	font-weight: 800;
+	text-align: center;
+	width: 100%;
+	margin-top: $spacing-m;
 }
 
 // Utility-Klassen
@@ -112,12 +134,6 @@ ul {
 }
 .text-green-400 {
 	color: $color-highlight;
-}
-.p-2 {
-	padding: $spacing-xs;
-}
-.mb-2 {
-	margin-bottom: $spacing-xs;
 }
 .rounded {
 	border-radius: $radius-md;

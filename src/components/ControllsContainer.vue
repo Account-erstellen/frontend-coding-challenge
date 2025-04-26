@@ -33,6 +33,7 @@ const isClicked = ref(false);
 const muteBtnColor = ref<string>("#eff4fa");
 const subtitlesVisible = ref<boolean>(false);
 
+
 const emit = defineEmits(["seek"]);
 
 function onSeek(event: Event) {
@@ -44,6 +45,7 @@ function onSeek(event: Event) {
 	}
 	emit("seek", newTime); // Parent kann updateTime aufrufen oder currentTime setzen
 }
+
 
 //Function to fullscreen the video
 const toggleFullscreen = () => {
@@ -219,7 +221,7 @@ function triggerClickEffect() {
 			:chapters="chapters"
 			:isMobileTranscriptOpen="isTranscriptOpen"
 			:isMobileChaptersOpen="isChaptersOpen"
-			v-if="true"
+			:currentTime="props.currentTime"
 		/>
 	</div>
 </template>
@@ -320,5 +322,4 @@ $media-break: 790px;
 	position: relative;
 	display: inline-block;
 }
-
 </style>

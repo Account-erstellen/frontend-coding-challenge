@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, provide, ref, watch } from "vue";
+import { onBeforeUnmount, onMounted, provide, ref, watch } from "vue";
 
 import ControllsContainer from "./ControllsContainer.vue";
 import ChaptersPanel from "./panels/ChaptersPanel.vue";
@@ -30,8 +30,10 @@ const isTranscriptOpen = ref<boolean>(false);
 
 //Fetch chapters and transcript on mount of the app
 onMounted(async () => {
-	//Fetch Links to Video URL
-	fetchVideo(videoRef.value);
+	//Fetch Video Url and check if it is valid
+	const videoFetchResult = await fetchVideo(videoRef.value);
+	videoError.value = videoFetchResult !== undefined ? videoFetchResult : false;
+
 	const fetchedChapters = await fetchChapters(
 		"https://meetyoo-code-challenge.s3.eu-central-1.amazonaws.com/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/full.xml"
 	);
@@ -52,7 +54,14 @@ onMounted(async () => {
 		}
 	}
 	transcriptFile.value = fetch("./transcript/transcript.vtt");
+	checkScreenSize();
+	window.addEventListener("resize", checkScreenSize);
 });
+
+onBeforeUnmount(() => {
+	window.removeEventListener("resize", checkScreenSize);
+});
+
 //Function to updated the currentchapter
 watch(currentTime, (newTime: number) => {
 	const chapter = chapters.value.find((c) => newTime >= c.start && newTime <= c.end);
@@ -62,6 +71,12 @@ watch(currentTime, (newTime: number) => {
 });
 provide("videoApi", { videoRef, seekTo });
 
+function checkScreenSize() {
+	if (window.innerWidth <= 1070) {
+		isChaptersOpen.value = false;
+		isTranscriptOpen.value = false;
+	}
+}
 //Handle video errors
 const handleVideoError = () => {
 	videoError.value = true;
@@ -246,5 +261,4 @@ $btn-max-width: 37px;
 		border-bottom-left-radius: 0;
 	}
 }
-
 </style>
