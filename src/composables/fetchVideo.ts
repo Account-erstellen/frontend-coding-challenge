@@ -1,4 +1,4 @@
-const videoUrl = "https://mainline.i3s.unice.fr/mooc/elephants-dream-medium.webm"; //"https://ubiventlive-fra.s3.eu-central-1.amazonaws.com/cdn/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/video.webm";//
+const videoUrl = "https://ubiventlive-fra.s3.eu-central-1.amazonaws.com/cdn/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/video.webm";//"https://mainline.i3s.unice.fr/mooc/elephants-dream-medium.webm"; 
 export async function fetchVideo(videoElement: HTMLVideoElement | null) {
 	var videoError = false
 	if (!videoElement) {
