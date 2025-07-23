@@ -5,6 +5,7 @@ defineProps<{
 	transcripts: { id: number; text: string; start: number; end: number }[];
 	currentTime: number;
 }>();
+
 </script>
 <template>
 	<div class="transcript-panel">
@@ -49,7 +50,7 @@ $color-subtle-bg: #e7e7e7;
 $spacing-xs: 0.5rem;
 $spacing-s: 6px;
 $spacing-m: 10px;
-$spacing-l: 1rem; // Optional, falls benötigt
+$spacing-l: 1rem;
 
 // Border Radius
 $radius-sm: 5px;

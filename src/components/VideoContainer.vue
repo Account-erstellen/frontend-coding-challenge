@@ -35,10 +35,10 @@ onMounted(async () => {
 	videoError.value = videoFetchResult !== undefined ? videoFetchResult : false;
 
 	const fetchedChapters = await fetchChapters(
-		"https://meetyoo-code-challenge.s3.eu-central-1.amazonaws.com/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/full.xml"
+		"./chapters/full.xml" //"https://meetyoo-code-challenge.s3.eu-central-1.amazonaws.com/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/full.xml" //
 	);
 	const transcriptResult = await fetchAndFormatTranscript(
-		"https://meetyoo-code-challenge.s3.eu-central-1.amazonaws.com/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/transcript.vtt"
+		"./transcript/transcript.vtt" //"https://meetyoo-code-challenge.s3.eu-central-1.amazonaws.com/live/S14JJ9Z6PKoO/bf1d4883-5305-4d65-a299-cbb654ef1ed9/transcript.vtt" //
 	);
 	if (Array.isArray(fetchedChapters) && Array.isArray(transcriptResult)) {
 		chapters.value = fetchedChapters;
@@ -69,6 +69,7 @@ watch(currentTime, (newTime: number) => {
 		currentChapter.value = chapter.title;
 	}
 });
+
 provide("videoApi", { videoRef, seekTo });
 
 function checkScreenSize() {
@@ -103,7 +104,7 @@ function seekTo(seconds: number) {
 }
 const handleSeek = (newTime: number) => {
 	currentTime.value = newTime;
-	updateTime(); // falls du willst, aber nicht zwingend notwendig
+	updateTime();
 };
 </script>
 

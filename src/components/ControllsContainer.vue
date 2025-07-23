@@ -33,7 +33,6 @@ const isClicked = ref(false);
 const muteBtnColor = ref<string>("#eff4fa");
 const subtitlesVisible = ref<boolean>(false);
 
-
 const emit = defineEmits(["seek"]);
 
 function onSeek(event: Event) {
@@ -45,7 +44,6 @@ function onSeek(event: Event) {
 	}
 	emit("seek", newTime); // Parent kann updateTime aufrufen oder currentTime setzen
 }
-
 
 //Function to fullscreen the video
 const toggleFullscreen = () => {
